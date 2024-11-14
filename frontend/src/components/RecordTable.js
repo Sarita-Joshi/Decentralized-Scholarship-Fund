@@ -1,13 +1,16 @@
 import React from 'react';
 import './RecordTable.css';
 
-function RecordTable({ data, columns, actions }) {
+function RecordTable({ data, columns, actions, headers }) {
+    if (!headers) {
+        headers = columns;
+    }
     return (
         <div className="table-container">
             <table className="record-table">
                 <thead>
                     <tr>
-                        {columns.map((col) => (
+                        {headers.map((col) => (
                             <th key={col}>{col}</th>
                         ))}
                         {actions && <th>Actions</th>}
@@ -21,7 +24,7 @@ function RecordTable({ data, columns, actions }) {
                             ))}
                             {actions && (
                                 <td>
-                                    {actions.map((action, actionIndex) => (
+                                    { (row["status"] && row["status"]==="Pending") && actions.map((action, actionIndex) => (
                                         <button
                                             key={actionIndex}
                                             onClick={() => action.onClick(row)}
