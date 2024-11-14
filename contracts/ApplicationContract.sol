@@ -13,10 +13,7 @@ contract ApplicationContract {
         string status;
     }
 
-    mapping(address => Application) public applications;
-
-    event ApplicationSubmitted(address applicant, uint256 amount, string mongoDbHash);
-    event ApplicationStatusUpdated(address applicant, string status);
+    mapping(uint256 => Application) public applications;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can perform this action");
@@ -27,16 +24,15 @@ contract ApplicationContract {
         owner = msg.sender;
     }
 
-    function submitApplication( uint256 _requestedAmount, string memory _mongoDbHash) external {
+    function submitApplication(uint256 _requestedAmount, string memory _mongoDbHash) external returns (uint256){
         applicationCount++;
-        applications[msg.sender] = Application(applicationCount, msg.sender, _requestedAmount, _mongoDbHash, "Pending");
-        emit ApplicationSubmitted(msg.sender, _requestedAmount, _mongoDbHash);
+        applications[applicationCount] = Application(applicationCount, msg.sender, _requestedAmount, _mongoDbHash, "Pending");
+        return applicationCount;
     }
 
-    function updateApplicationStatus(address applicantAddress, string memory _status) external onlyOwner {
-        require(bytes(applications[applicantAddress].status).length > 0, "Application does not exist");
-        applications[applicantAddress].status = _status;
-        emit ApplicationStatusUpdated(applicantAddress, _status);
+    function updateApplicationStatus(uint256 _id, string memory _status) external onlyOwner {
+        require(_id <= applicationCount, "Application does not exist");
+        applications[_id].status = _status;
     }
 
 

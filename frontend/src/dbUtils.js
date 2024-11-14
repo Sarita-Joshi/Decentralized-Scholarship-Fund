@@ -51,6 +51,17 @@ export const updateAppStatus = async (id, status) => {
     }
 };
 
+// Update application status by ID
+export const updateAppId = async (id, applicantId) => {
+    try {
+        const response = await axios.put(`${API_BASE_URL}/applications/${id}/status`, { applicantId });
+        return response.data;
+    } catch (error) {
+        console.error("Error updating application status:", error);
+        throw error;
+    }
+};
+
 // Get all approved applications
 export const getApprovedApplications = async () => {
     try {

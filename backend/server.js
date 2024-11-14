@@ -31,6 +31,7 @@ const applicationSchema = new mongoose.Schema({
     reason: { type: String, required: true },
     personalStatement: { type: String, required: true },
     applicantAddress: String,
+    applicantId: { type: String, required: true },
     status: { type: String, default: "Pending" },
 }, { timestamps: true });
 
@@ -77,9 +78,8 @@ app.get("/applications/:id", async (req, res) => {
 
 // Update application status by ID
 app.put("/applications/:id/status", async (req, res) => {
-    const { status } = req.body;
     try {
-        const application = await Application.findOneAndUpdate({applicantAddress: req.params.id}, { status }, { new: true });
+        const application = await Application.findOneAndUpdate({_id: req.params.id}, req.body, { new: true });
         if (!application) {
             return res.status(404).json({ error: "Application not found" });
         }

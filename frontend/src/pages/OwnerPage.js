@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import RecordTable from '../components/RecordTable';
 import './OwnerPage.css';
 import { getAllApplications } from '../dbUtils';
-import { disburseFunds } from "../contractUtils";
+import { disburseFunds, getUserAccount } from "../contractUtils";
 
 
 
@@ -23,13 +23,16 @@ function OwnerPage() {
         { id: 3, applicant: '0x3456...7890', amount: '0.8 ETH', status: 'Rejected' },
         { id: 4, applicant: '0x4567...8901', amount: '2.0 ETH', status: 'Pending' },
     ]);
+    const [account, setAccount] = useState(null);
 
     // Fetch applications on load
     useEffect(() => {
         const loadApplications = async () => {
+            const userAccount = await getUserAccount();
             const appData = await getAllApplications();
             //TODO filter and kee ponly pending applications
             setApplications(appData);
+            setAccount(userAccount);
         };
         loadApplications();
     }, []);
@@ -44,6 +47,11 @@ function OwnerPage() {
     // Columns for the tables
     const applicationColumns = ['id', 'applicant', 'amount', 'status'];
     const donationColumns = ['id', 'donor', 'amount', 'date'];
+
+    const applicationHeaders = ['Id', 'Applicant', 'Amount', 'Status'];
+    const donationHeaders = ['Id', 'Donor', 'Amount', 'Date'];
+
+
 
     return (
         <div>
@@ -66,11 +74,11 @@ function OwnerPage() {
             <div className="tables-section">
                 <div className="table-container">
                     <h3>Applications</h3>
-                    <RecordTable data={applications} columns={applicationColumns} />
+                    <RecordTable data={applications} columns={applicationColumns} headers={applicationHeaders}/>
                 </div>
                 <div className="table-container">
                     <h3>Donations</h3>
-                    <RecordTable data={donations} columns={donationColumns} />
+                    <RecordTable data={donations} columns={donationColumns} headers={donationHeaders}/>
                 </div>
             </div>
         </div>

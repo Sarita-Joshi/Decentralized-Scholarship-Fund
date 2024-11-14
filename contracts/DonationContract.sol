@@ -5,8 +5,6 @@ contract DonationContract {
     address public owner;
     uint256 public totalDonations;
 
-    event DonationReceived(address donor, uint256 amount);
-
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can perform this action");
         _;
@@ -19,7 +17,7 @@ contract DonationContract {
     function donate() external payable {
         require(msg.value > 0, "Donation must be greater than zero");
         totalDonations += msg.value;
-        emit DonationReceived(msg.sender, msg.value);
+        
     }
 
     function getTotalDonations() external view returns (uint256) {

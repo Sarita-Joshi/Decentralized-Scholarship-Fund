@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Confetti from 'react-confetti';
 import { FaUser, FaSchool, FaMoneyBill, FaInfoCircle } from 'react-icons/fa';
 import { getUserAccount, submitApplication } from '../contractUtils'; // Adjust import based on your utils structure
-import {createApplication, getApplicationByAddress} from '../dbUtils';
+import {createApplication, getApplicationByAddress, updateAppId, updateAppStatus} from '../dbUtils';
 import './ApplicantPage.css';
 
 function ApplicantPage() {
@@ -13,6 +13,7 @@ function ApplicantPage() {
         fullName: 'John Doe',
         email: 'JD@csuf.edu',
         phoneNumber: '9999999999',
+        applicantId: 'default',
         applicantAddress: '',
         institution: 'CSUF',
         program: 'MS CS',
@@ -37,7 +38,7 @@ function ApplicantPage() {
             let application =  await getApplicationByAddress(userAccount);
             
 
-            const status = application?.status;
+            const status = null;//application?.status;
             // const status = null; // Example: "Approved", "Rejected", "Pending", or null if no application
             if (status) {
                 setApplicationStatus(status);
@@ -75,10 +76,14 @@ function ApplicantPage() {
 
             if (result.success) {
                 alert(result.message);
+                console.log({mongoDBHash, id:result.id, log:'sdsdgdsgsdsg'})
+                updateAppId(mongoDBHash.toString(), result.id.toString())
 
                 setFormData({
                     fullName: '',
                     email: '',
+                    applicantId: null,
+                    applicantAddress: '',
                     phoneNumber: '',
                     institution: '',
                     program: '',

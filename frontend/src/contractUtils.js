@@ -1,32 +1,31 @@
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 import { ScholarshipFundABI, ScholarshipFundAddress } from "./contractABI";
 
 // Define your contract address and ABI
 const CONTRACT_ADDRESS = ScholarshipFundAddress;
 const CONTRACT_ABI = ScholarshipFundABI;
 
-
 // Singleton contract instance
 let contract = null;
 let provider = null;
 let signer = null;
-let account = null
+let account = null;
 
 // Function to initialize the provider, signer, and contract if not already done
 const getContractInstance = async () => {
-    if (contract) return contract;
+  if (contract) return contract;
 
-    if (!window.ethereum) {
-        alert("Please install MetaMask to use this application.");
-        return null;
-    }
+  if (!window.ethereum) {
+    alert("Please install MetaMask to use this application.");
+    return null;
+  }
 
-    // Connect to MetaMask
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    signer = provider.getSigner();
-    contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+  // Connect to MetaMask
+  provider = new ethers.providers.Web3Provider(window.ethereum);
+  signer = provider.getSigner();
+  contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-    return contract;
+  return contract;
 };
 
 //////////////////////
@@ -35,113 +34,122 @@ const getContractInstance = async () => {
 
 // Connect to MetaMask and set the current account
 export const connectWallet = async () => {
-    if (!window.ethereum) {
-        alert("Please install MetaMask.");
-        return null;
-    }
+  if (!window.ethereum) {
+    alert("Please install MetaMask.");
+    return null;
+  }
 
-    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-    account = accounts[0];
-    return accounts[0];
+  const accounts = await window.ethereum.request({
+    method: "eth_requestAccounts",
+  });
+  account = accounts[0];
+  return accounts[0];
 };
 
 export const getUserAccount = async () => {
-    if (!account) {
-        await connectWallet();
-    }
-    return account;
+  if (!account) {
+    await connectWallet();
+  }
+  return account;
 };
 
 // Check if the connected account is the contract owner
 export const checkIfOwner = async (account) => {
-    try {
-        const contract = await getContractInstance();
-        const ownerAddress = await contract.getOwner();
-        return account.toLowerCase() === ownerAddress.toLowerCase();
-    } catch (error) {
-        console.error("Error checking ownership:", error);
-        return false;
-    }
+  try {
+    const contract = await getContractInstance();
+    const ownerAddress = await contract.getOwner();
+    return account.toLowerCase() === ownerAddress.toLowerCase();
+  } catch (error) {
+    console.error("Error checking ownership:", error);
+    return false;
+  }
 };
 
 // Fetch total donations from the contract
 export const getTotalDonations = async () => {
-    try {
-        const contract = await getContractInstance();
-        const totalDonations = await contract.getTotalDonations();
-        return ethers.utils.formatEther(totalDonations.toString());
-    } catch (error) {
-        console.error("Error fetching total donations:", error);
-        return null;
-    }
+  try {
+    const contract = await getContractInstance();
+    const totalDonations = await contract.getTotalDonations();
+    return ethers.utils.formatEther(totalDonations.toString());
+  } catch (error) {
+    console.error("Error fetching total donations:", error);
+    return null;
+  }
 };
 
 // Fetch applications (replace with actual data fetching logic as needed)
 export const fetchApplications = async () => {
-    try {
-        const contract = await getContractInstance();
-        const applications = await contract.getApplications(); // Adjust based on your contract
-        return applications;
-    } catch (error) {
-        console.error("Error fetching applications:", error);
-        return [];
-    }
+  try {
+    const contract = await getContractInstance();
+    const applications = await contract.getApplications(); // Adjust based on your contract
+    return applications;
+  } catch (error) {
+    console.error("Error fetching applications:", error);
+    return [];
+  }
 };
 
 // Make a donation through the contract
 export const makeDonation = async (amount) => {
-    try {
-        const contract = await getContractInstance();
-        const tx = await contract.donate({
-            value: ethers.utils.parseEther(amount)
-        });
-        await tx.wait();
-        return { success: true, message: "Donation successful!" };
-    } catch (error) {
-        console.error("Donation failed:", error);
-        return { success: false, message: "Donation failed." };
-    }
+  try {
+    const contract = await getContractInstance();
+    const tx = await contract.donate({
+      value: ethers.utils.parseEther(amount),
+    });
+    await tx.wait();
+    return { success: true, message: "Donation successful!" };
+  } catch (error) {
+    console.error("Donation failed:", error);
+    return { success: false, message: "Donation failed." };
+  }
 };
 
 // Submit a new application to the contract
 export const submitApplication = async (applicationAmount, metadataHash) => {
-    try {
-        const contract = await getContractInstance();
-        const tx = await contract.submitApplication(
-            ethers.utils.parseEther(applicationAmount),
-            metadataHash // This could be a hash from MongoDB or IPFS
-        );
-        await tx.wait();
-        return { success: true, message: "Application submitted!" };
-    } catch (error) {
-        console.error("Application submission failed:", error);
-        return { success: false, message: "Failed to submit application." };
-    }
+  try {
+    const contract = await getContractInstance();
+    const tx = await contract.submitApplication(
+      ethers.utils.parseEther(applicationAmount),
+      metadataHash // This could be a hash from MongoDB or IPFS
+    );
+    // await tx.wait();
+    const receipt = await tx.wait();
+    // Extract the application ID from the event
+    const applicationId = receipt.events[0].args[0];
+    console.log("Application ID:", applicationId.toString());
+    
+    return { success: true, message: "Application submitted!", id: applicationId.toString() };
+  } catch (error) {
+    console.error("Application submission failed:", error);
+    return { success: false, message: "Failed to submit application.", id:null };
+  }
 };
 
 // Approve an application (only for contract owner)
-export const approveApplication = async (applicationId, newStatus) => {
-    try {
-        const contract = await getContractInstance();
-        const applicationAddress = ethers.utils.getAddress(applicationId);
-        const tx = await contract.updateApplicationStatus(applicationAddress, newStatus);
-        await tx.wait();
-        return { success: true, message: `Application ${applicationId} ${newStatus}.` };
-    } catch (error) {
-        console.error("Application update failed:", error);
-        return { success: false, message: "Failed to update application." };
-    }
+export const approveApplication = async (_id, newStatus) => {
+  try {
+    const contract = await getContractInstance();
+    const tx = await contract.updateApplicationStatus(_id, newStatus);
+    await tx.wait();
+    return { success: true, message: `Application ${_id} ${newStatus}.` };
+  } catch (error) {
+    console.error("Application update failed:", error);
+    return { success: false, message: "Failed to update application." };
+  }
 };
 
 // Disburse funds to an approved applicant (only for contract owner)
 export const disburseFunds = async (applicationId) => {
-    try {
-        const contract = await getContractInstance();
-        const tx = await contract.disburseFunds(applicationId);
-        await tx.wait();
-        return { success: true, message: `Funds disbursed to applicant ${applicationId}!` };
-    } catch (error) {
-        console.error("Disbursement failed:", error);
-        return { success: false, message: "Failed to disburse funds." };
-    }
+  try {
+    const contract = await getContractInstance();
+    const tx = await contract.disburseFunds(applicationId);
+    await tx.wait();
+    return {
+      success: true,
+      message: `Funds disbursed to applicant ${applicationId}!`,
+    };
+  } catch (error) {
+    console.error("Disbursement failed:", error);
+    return { success: false, message: "Failed to disburse funds." };
+  }
 };

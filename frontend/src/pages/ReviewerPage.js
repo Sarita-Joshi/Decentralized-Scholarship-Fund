@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import RecordTable from '../components/RecordTable';
 import './ReviewerPage.css';
-import { approveApplication } from "../contractUtils";
+import { approveApplication, getUserAccount } from "../contractUtils";
 import { updateAppStatus, getAllApplications } from '../dbUtils';
 
 function ReviewerPage() {
     // Dummy data for applications
-    const [applications, setApplications] = useState([
+    const [applications, setApplications] = useState([[
         { id: 1, applicant: '0x1234...5678', amount: '0.5 ETH', status: 'Pending' },
         { id: 2, applicant: '0x2345...6789', amount: '1.2 ETH', status: 'Approved' },
         { id: 3, applicant: '0x3456...7890', amount: '0.8 ETH', status: 'Rejected' },
         { id: 4, applicant: '0x4567...8901', amount: '2.0 ETH', status: 'Pending' },
-    ]);
+    ]]);
+
+    const [account, setAccount] = useState(null);
 
     // Fetch applications on load
     useEffect(() => {
         const loadApplications = async () => {
+            const userAccount = await getUserAccount();
             const appData = await getAllApplications();
-            //TODO filter and kee ponly pending applications
+            //TODO filter and keep only pending applications
             setApplications(appData);
+            setAccount(userAccount);
         };
         loadApplications();
     }, []);
@@ -26,38 +30,45 @@ function ReviewerPage() {
     const [filter, setFilter] = useState('All');
 
     // Columns for RecordTable
-    const columns = ['id', 'applicant', 'amount', 'status'];
+    const columns = ['_id', 'fullName', 'requestedAmount', 'status'];
+    const displayColumns = ['Id', 'Applicant', 'Amount', 'Status'];
+
 
     // Actions for RecordTable
     const actions = [
         {
             label: 'Approve',
-            onClick: (row) => {
-                alert(`Approving application ID: ${row.id}`);
+            onClick: async (row) => {
+                alert(`Approving application ID: ${row._id}`);
+                console.log(applications);
+                const appplicant = applications.filter(item => item._id === row._id)[0];
+                console.log(appplicant);
                 // Here you would implement the logic to approve this application
-                updateApplicationStatus(row.id, 'Approved');
+                await updateApplicationStatus(appplicant.applicantId, appplicant._id, 'Approved');
             },
         },
         {
             label: 'Reject',
-            onClick: (row) => {
-                alert(`Rejecting application ID: ${row.id}`);
-                // Here you would implement the logic to reject this application
-                updateApplicationStatus(row.id, 'Rejected');
+            onClick: async (row) => {
+                alert(`Approving application ID: ${row._id}`);
+                const appplicant = applications.filter(item => item._id === row._id);
+                // Here you would implement the logic to approve this application
+                await updateApplicationStatus(appplicant.applicantId, appplicant._id, 'Approved');
             },
         },
     ];
 
     // Update application status in the dummy data
-    const updateApplicationStatus = async (id, newStatus) => {
+    const updateApplicationStatus = async (id, mongoHash, newStatus) => {
+        console.log({id, mongoHash, newStatus})
         const result = await approveApplication(id, newStatus);
         alert(result.message);
 
         if (result.success) {
-            updateAppStatus(id, newStatus);
+            updateAppStatus(mongoHash, newStatus);
             setApplications((prevApps) =>
                 prevApps.map((app) =>
-                    app.id === id ? { ...app, status: newStatus } : app
+                    app._id === mongoHash ? { ...app, status: newStatus } : app
                 )
             );
         }
@@ -84,7 +95,7 @@ function ReviewerPage() {
             </div>
 
             <div>
-                <RecordTable data={filteredApplications} columns={columns} actions={actions} />
+                <RecordTable data={filteredApplications} columns={columns} actions={actions} headers={displayColumns} />
             </div>
         </div>
     );
