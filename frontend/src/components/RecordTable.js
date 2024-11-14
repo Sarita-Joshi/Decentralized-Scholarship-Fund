@@ -2,7 +2,6 @@ import React from 'react';
 import './RecordTable.css';
 
 function RecordTable({ data, columns, actions }) {
-    console.log({data, columns});
     return (
         <div className="table-container">
             <table className="record-table">

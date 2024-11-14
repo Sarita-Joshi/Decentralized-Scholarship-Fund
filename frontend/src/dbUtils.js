@@ -18,11 +18,12 @@ export const createApplication = async (applicationData) => {
 };
 
 // Get an application by ID
-export const getApplicationById = async (id) => {
+export const getApplicationByAddress = async (id) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/applications/${id}`);
         return response.data;
     } catch (error) {
+        if (error.status === 404) return null;
         console.error("Error fetching application:", error);
         throw error;
     }
@@ -91,7 +92,6 @@ export const getTotalDonationsMongo = async () => {
 export const getAllDonations = async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/donations`);
-        console.log({"res":response.data});
         return response.data;
     } catch (error) {
         console.error("Error fetching donations:", error);

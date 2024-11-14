@@ -1,33 +1,114 @@
-.form-section {
-    margin-bottom: 20px;
+.applicant-page {
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
     padding: 20px;
-    border: 1px solid #ccc;
+}
+
+.status-card {
+    background: #fff;
+    padding: 30px;
     border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    position: relative;
 }
 
-.form-section.collapsed {
-    display: none;
+.status-image {
+    width: 100%;
+    max-width: 300px;
+    margin: 20px 0;
 }
 
-.form-section.expanded {
+.quote {
+    font-size: 16px;
+    color: #555;
+    margin-top: 15px;
+    font-style: italic;
+}
+
+.application-form {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+.form-section {
+    display: flex;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.section-title {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-right: 20px;
+    border-right: 2px solid #f0f0f0;
+}
+
+.section-icon {
+    font-size: 28px;
+    color: #4A5FFF;
+    margin-bottom: 5px;
+}
+
+.section-content {
+    width: 80%;
+    padding-left: 20px;
+}
+
+.section-content label {
     display: block;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #555;
 }
 
-button {
-    margin: 5px;
-    padding: 8px 12px;
-    cursor: pointer;
+.section-content label input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.button-group button {
+    padding: 10px 20px;
+    font-size: 14px;
     border: none;
     border-radius: 4px;
-    background-color: #4CAF50;
-    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-button:hover {
-    opacity: 0.9;
+.button-group button:first-child {
+    background-color: #4A5FFF;
+    color: #fff;
 }
 
-.error {
-    color: red;
-    font-size: 12px;
+.button-group button:first-child:hover {
+    background-color: #3A4FEF;
+}
+
+.button-group button:last-child {
+    background-color: #f0f0f0;
+    color: #555;
+}
+
+.button-group button:last-child:hover {
+    background-color: #e0e0e0;
 }

@@ -65,7 +65,7 @@ app.post("/applications", async (req, res) => {
 // Get an application by ID
 app.get("/applications/:id", async (req, res) => {
     try {
-        const application = await Application.findById(req.params.id);
+        const application = await Application.findOne({applicantAddress: req.params.id});
         if (!application) {
             return res.status(404).json({ error: "Application not found" });
         }
@@ -79,7 +79,7 @@ app.get("/applications/:id", async (req, res) => {
 app.put("/applications/:id/status", async (req, res) => {
     const { status } = req.body;
     try {
-        const application = await Application.findByIdAndUpdate(req.params.id, { status }, { new: true });
+        const application = await Application.findOneAndUpdate({applicantAddress: req.params.id}, { status }, { new: true });
         if (!application) {
             return res.status(404).json({ error: "Application not found" });
         }

@@ -20,9 +20,6 @@ function DonorPage() {
 
             const donData = await getAllDonations();
             setDonationList(donData);
-
-            console.log(total);
-            console.log(donData);
         };
         loadData();
     }, []);
