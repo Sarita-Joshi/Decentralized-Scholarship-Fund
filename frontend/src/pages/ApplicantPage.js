@@ -13,7 +13,7 @@ function ApplicantPage() {
         fullName: 'John Doe',
         email: 'JD@csuf.edu',
         phoneNumber: '9999999999',
-        applicantAddress: '0xAbc123...',
+        applicantAddress: '',
         institution: 'CSUF',
         program: 'MS CS',
         year: 'First',
@@ -30,17 +30,22 @@ function ApplicantPage() {
     useEffect(() => {
         // Simulate fetching application status from database or contract
         const fetchApplicationStatus = async () => {
-            const userAccount = '0xABC123...' //await getUserAccount();
+            const userAccount = await getUserAccount(); //'0xABC123...'
+            console.log({userAccount});
             setAccount(userAccount);
+            console.log({userAccount});
             let application =  await getApplicationByAddress(userAccount);
             
+
             const status = application?.status;
             // const status = null; // Example: "Approved", "Rejected", "Pending", or null if no application
             if (status) {
                 setApplicationStatus(status);
                 setHasActiveApplication(true);
+                
+            
             }
-
+            console.log({account});
             console.log({status, hasActiveApplication});
         };
 
@@ -48,6 +53,7 @@ function ApplicantPage() {
     }, []);
 
     const handleChange = (e) => {
+        console.log({account, change:'fsdfsdf'});
         const { name, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
@@ -58,8 +64,10 @@ function ApplicantPage() {
         
         if (Object.keys(errors).length === 0) {
             console.log("Application Submitted:", formData);
-            const mongoDBHash = await createApplication(formData);
             formData.applicantAddress = account;
+            console.log({formData, account});
+            const mongoDBHash = await createApplication(formData);
+            
             const result = await submitApplication(
                 formData.requestedAmount.toString(),
                 mongoDBHash.toString(),
