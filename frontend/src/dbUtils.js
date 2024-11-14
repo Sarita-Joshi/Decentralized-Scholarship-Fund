@@ -80,7 +80,6 @@ export const createDonation = async (donationData) => {
 export const getTotalDonationsMongo = async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/donations/total`);
-        print()
         return response.data.total;
     } catch (error) {
         console.error("Error fetching total donations:", error);
@@ -92,6 +91,7 @@ export const getTotalDonationsMongo = async () => {
 export const getAllDonations = async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/donations`);
+        console.log({"res":response.data});
         return response.data;
     } catch (error) {
         console.error("Error fetching donations:", error);

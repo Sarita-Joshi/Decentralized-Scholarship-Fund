@@ -1,8 +1,11 @@
+
 require('dotenv').config();
+const moment = require('moment');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors'); // Import CORS package
 const app = express();
+
 
 // Enable CORS for all routes
 app.use(cors()); 
@@ -137,7 +140,13 @@ app.get("/donations/total", async (req, res) => {
 // Get all donations
 app.get("/donations", async (req, res) => {
     try {
-        const donations = await Donation.find();
+        let donations = await Donation.find();
+        donations = donations.map((item) => ({
+            "Id": item._id.toString(),
+            "Donor Address": item.donorAddress,
+            "Amount": item.amount,
+            "Date": moment(item.timestamp).format('YYYY-MM-DD HH:mm:ss')
+        }));
         res.json(donations);
     } catch (error) {
         res.status(400).json({ error: error.message });

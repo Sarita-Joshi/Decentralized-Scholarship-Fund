@@ -30,7 +30,7 @@ function DonorPage() {
     
     
     // Columns for RecordTable
-    const columns = ["id", "Donor Address", "Amount", "Date"];
+    const columns = ["Id", "Donor Address", "Amount", "Date"];
 
     // Actions for RecordTable
     const actions = [];
@@ -39,8 +39,6 @@ function DonorPage() {
     const donateFunds = async () => {
         try {
             const result = makeDonation(donationAmount);
-            alert(result.message);
-
             const account = await getUserAccount();
 
             if (result.success) {
