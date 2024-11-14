@@ -123,7 +123,8 @@ export const submitApplication = async (applicationAmount, metadataHash) => {
 export const approveApplication = async (applicationId, newStatus) => {
     try {
         const contract = await getContractInstance();
-        const tx = await contract.updateApplicationStatus(applicationId, newStatus);
+        const applicationAddress = ethers.utils.getAddress(applicationId);
+        const tx = await contract.updateApplicationStatus(applicationAddress, newStatus);
         await tx.wait();
         return { success: true, message: `Application ${applicationId} ${newStatus}.` };
     } catch (error) {

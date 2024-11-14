@@ -35,12 +35,12 @@ contract ScholarshipFund {
     }
 
     // Functions to interact with ApplicationContract
-    function submitApplication(uint256 _requestedAmount, string memory _mongoDbHash) external {
+    function submitApplication( uint256 _requestedAmount, string memory _mongoDbHash) external {
         applicationContract.submitApplication(_requestedAmount, _mongoDbHash);
     }
 
-    function updateApplicationStatus(uint256 _id, string memory _status) external onlyOwner {
-        applicationContract.updateApplicationStatus(_id, _status);
+    function updateApplicationStatus(address applicantAddress, string memory _status) external onlyOwner {
+        applicationContract.updateApplicationStatus(applicantAddress, _status);
     }
 
     // Function to fund the Disbursement Contract
@@ -50,14 +50,14 @@ contract ScholarshipFund {
     }
 
     // Function to disburse funds to an approved applicant
-    function disburseFunds(uint256 _applicationId) external onlyOwner {
+    function disburseFunds(address applicantAddress) external onlyOwner {
         // Get application details from ApplicationContract
-        (, address applicant, uint256 requestedAmount, , string memory status) = applicationContract.applications(_applicationId);
+        (, address applicant, uint256 requestedAmount, , string memory status) = applicationContract.applications(applicantAddress);
 
         require(keccak256(bytes(status)) == keccak256(bytes("Approved")), "Application is not approved");
 
         // Call disburseFunds on DisbursementContract
-        disbursementContract.disburseFunds(_applicationId, payable(applicant), requestedAmount);
+        disbursementContract.disburseFunds(applicantAddress, payable(applicant), requestedAmount);
     }
 
     function getOwner() external view returns (address) {

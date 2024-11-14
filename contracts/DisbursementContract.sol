@@ -5,7 +5,7 @@ contract DisbursementContract {
     address public owner;
 
     // Events
-    event FundsDisbursed(uint256 applicationId, address recipient, uint256 amount);
+    event FundsDisbursed(address applicantAddress, address recipient, uint256 amount);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can perform this action");
@@ -17,12 +17,12 @@ contract DisbursementContract {
     }
 
     // Function to disburse funds to approved applicants
-    function disburseFunds(uint256 applicationId, address payable recipient, uint256 amount) external onlyOwner {
+    function disburseFunds(address applicantAddress, address payable recipient, uint256 amount) external onlyOwner {
         require(address(this).balance >= amount, "Insufficient balance for disbursement");
         require(amount > 0, "Amount must be greater than zero");
 
         recipient.transfer(amount);
-        emit FundsDisbursed(applicationId, recipient, amount);
+        emit FundsDisbursed(applicantAddress, recipient, amount);
     }
 
     // Function to allow the controller contract to deposit funds

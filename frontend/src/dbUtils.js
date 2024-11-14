@@ -32,7 +32,7 @@ export const getApplicationByAddress = async (id) => {
 // Get all applications
 export const getAllApplications = async () => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/applications`);
+        const response = await axios.get(`${API_BASE_URL}/all-applications`);
         return response.data;
     } catch (error) {
         console.error("Error fetching applications:", error);
@@ -54,7 +54,7 @@ export const updateAppStatus = async (id, status) => {
 // Get all approved applications
 export const getApprovedApplications = async () => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/applications/approved`);
+        const response = await axios.get(`${API_BASE_URL}/approved-applications`);
         return response.data;
     } catch (error) {
         console.error("Error fetching approved applications:", error);
