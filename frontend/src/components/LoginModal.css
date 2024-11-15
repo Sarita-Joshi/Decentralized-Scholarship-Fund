@@ -1,53 +1,162 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f8; /* Same background color for both sections */
+}
+
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
-    justify-content: center;
     align-items: center;
-    z-index:4
+    justify-content: center;
+    z-index: 4;
 }
 
 .modal-content {
-    background-color: white;
+    background: #fff;
     padding: 20px;
+    width: 320px;
     border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    width: 300px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.h22 {
+    color: #333; /* Purple color */
+    margin-bottom: 20px;
+}
+
+.custom-dropdown {
+    background-color: #eee;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+    color: #6C63FF;
+    font-weight: bold;
+}
+
+.dropdown-options {
+    list-style: none;
+    padding: 0;
+    margin: 5px 0 0;
+    position: absolute;
+    background: #fff;
+    border: 1px solid #ddd;
+    width: 100%;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+.dropdown-options li {
+    padding: 8px;
+    cursor: pointer;
+    color: #6C63FF;
+}
+
+.dropdown-options li:hover {
+    background: #f0e6fa;
+}
+
+form {
+    padding-right: 20px;
+}
+
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.checkbox-group {
+    text-align: left;
+    margin: 15px 0;
+    color: #333;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
+    position: relative;
+    padding-left: 5px;
+}
+
+.info-icon {
+    display: inline-block;
+    margin-left: 5px;
     position: relative;
 }
 
-input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.tooltip {
+    display: none;
+    position: absolute;
+    left: 10;
+    background-color: #f9f9f9;
+    color: #fff;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 0.8em;
+    z-index: 10;
+    white-space: nowrap;
 }
 
-button {
-    padding: 10px 20px;
-    margin-top: 10px;
+.info-icon:hover .tooltip {
+    display: block;
+}
+
+.tooltip-button {
+    background: #6C63FF;
+    color: #fff;
     border: none;
-    border-radius: 4px;
-    background-color: #4CAF50;
-    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
     cursor: pointer;
 }
 
-button.close-button {
-    background-color: #f44336;
+.tooltip-button:hover {
+    background: #ddd;
 }
 
-button:hover {
-    opacity: 0.9;
+button {
+    width: 100%;
+    margin-top: 10px;
+    background-color: #6C63FF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.close-button {
+    background-color: #D32F2F;
 }
 
 .error-message {
-    color: red;
+    color: #D32F2F;
     margin-top: 10px;
+    font-size: 12px;
+}
+
+.account-message {
+    color: #333;
+    margin-top: 10px;
+    font-size: 12px;
+    overflow: hidden;
+    width: 100%;
+    max-lines: 1;
+    text-overflow: ellipsis;
 }
