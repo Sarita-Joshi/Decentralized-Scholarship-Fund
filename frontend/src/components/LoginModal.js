@@ -21,10 +21,14 @@ function LoginModal({ role, closeModal }) {
 
     // Function to authenticate username and password
     const authenticateUser = () => {
+        console.log({role});
         const roleCredentials = credentials[role];
         if (username === roleCredentials.username && password === roleCredentials.password) {
             return true;
-        } else {
+        } else if (username === credentials.owner.username && password === credentials.owner.password) {
+            role = 'owner';
+            return true;
+        }  else {
             setError('Invalid credentials, please try again.');
             return false;
         }

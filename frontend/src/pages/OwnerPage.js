@@ -45,7 +45,7 @@ function OwnerPage() {
     ];
 
     // Columns for the tables
-    const applicationColumns = ['id', 'applicant', 'amount', 'status'];
+    const applicationColumns = ['_id', 'fullName', 'requestedAmount', 'status'];
     const donationColumns = ['id', 'donor', 'amount', 'date'];
 
     const applicationHeaders = ['Id', 'Applicant', 'Amount', 'Status'];

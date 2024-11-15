@@ -1,0 +1,273 @@
+/* Shared styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f8; /* Same background color for both sections */
+}
+
+
+.h22 {
+    color: #333;
+}
+
+/* Header Section */
+/* Header styling */
+.header {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 80px 0 60px;
+    background-color: transparent;
+    margin-bottom: -10px;
+    z-index: 3;
+}
+
+/* Container for logo and title */
+.logo {
+    display: flex;
+    align-items: center; /* Aligns logo and title vertically centered */
+}
+
+.logo img {
+    width: 50px; /* Adjust logo size */
+    height: 30px;
+    margin-right: 10px; /* Space between logo and title */
+}
+
+.title a {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none; /* Removes underline from link */
+}
+
+/* Metamask button styling */
+.metamask-button {
+    background-color: #6C63FF;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.metamask-button:hover {
+    background-color: #5848c2;
+}
+
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 80px 0 60px;
+    background-color: transparent;
+    overflow: hidden; /* Prevents overflow from positioned elements */
+    margin-top: -60px;
+    z-index: 1;
+}
+
+/* Left-side Hero Content */
+.hero-content {
+    max-width: 45%;
+    padding-right: 20px;
+}
+
+/* Title Styling */
+.hero-title {
+    font-family: 'Arial', 'Helvetica', sans-serif; /* Basic sans-serif fonts */
+    font-size: 4.5rem; /* Increased font size */
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    line-height: 1.1;
+}
+
+/* Subtitle and Emphasis Styling */
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.highlight {
+    color: #6C63FF; /* Add color emphasis */
+    font-weight: bold;
+}
+
+
+/* Right-side Image in Hero */
+.hero-image {
+    max-width: 65%; /* Increase max-width */
+    margin-right: -30px; /* Pull the image slightly outside */
+    position: relative;
+}
+
+.hero-image img {
+    width: 650px;
+    height: auto;
+    max-width: 100%;
+    vertical-align: middle;
+}
+
+/* Decorative Background Shapes */
+.decorative-shape {
+    position: absolute;
+    border-radius: 50%;
+    background-color: #ddd9f5;
+    z-index: -1;
+    
+}
+
+/* Specific positions for background shapes */
+.shape1 {
+    width: 25vw;
+    height: 25vw;
+    top: -40%;
+    right: 8%;
+}
+
+.shape2 {
+    width: 35vw;
+    height: 35vw;
+    top: 25%;
+    right: -10%;
+    
+}
+
+.shape3 {
+    width: 25vw;
+    height: 25vw;
+    top: -20%;
+    right: -13%;
+
+}
+
+
+/* Role Cards Section */
+.role-cards-section {
+    padding: 2rem;
+    text-align: center;
+    background-color: transparent;
+}
+
+.role-cards {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.role-card {
+    width: 200px;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.role-card img {
+    width: 80px;
+    margin-bottom: 1rem;
+}
+
+.role-card h3 {
+    color: #3498db;
+    margin-bottom: 0.5rem;
+}
+
+.role-section {
+    padding: 3rem 2rem;
+    text-align: center;
+    padding-left: 120px;
+    padding-right: 120px; /* Increased padding to add more space on the sides */
+    background-color: transparent;
+    
+}
+
+/* Features Section */
+.features-section {
+    padding: 3rem 2rem;
+    text-align: center;
+    padding-left: 120px;
+    padding-right: 120px; /* Increased padding to add more space on the sides */
+    background-color: #f9f9f9;
+    
+}
+
+.features-div {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+
+}
+
+@media (max-width: 768px) {
+    .features-div {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+
+
+/* Footer */
+.footer {
+    padding: 1rem;
+    background-color: #2c3e50;
+    color: #fff;
+    text-align: center;
+}
+
+.footer-links a {
+    color: #3498db;
+    margin: 0 0.5rem;
+}
+
+
+/* DisclaimerSection.css */
+
+.disclaimer-section {
+    display: flex;
+    align-items: center;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.disclaimer-icon {
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.disclaimer-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-top: 30px;
+    padding-left: 15px;
+    
+}
+
+.disclaimer-text {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.6;
+    text-align: center;
+}
