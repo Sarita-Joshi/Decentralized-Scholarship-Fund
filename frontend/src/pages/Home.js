@@ -52,13 +52,13 @@ function Home() {
 
 {/* Hero Section */}
 <section className="hero-section">
-<div class="hero-content">
-        <h1 class="hero-title">EduFund</h1>
-        <p class="hero-subtitle">
-            A new way for <span class="highlight">academic funding</span>.<br />
-            Say hello 👋 to our new <span class="highlight">Decentralized</span> scholarship platform.
+<div className="hero-content">
+        <h1 className="hero-title">EduFund</h1>
+        <p className="hero-subtitle">
+            A new way for <span className="highlight">academic funding</span>.<br />
+            Say hello 👋 to our new <span className="highlight">Decentralized</span> scholarship platform.
         </p>
-        <button class="metamask-button" onClick={() => handleLoginClick("applicant")}>Get Started</button>
+        <button className="metamask-button" onClick={() => handleLoginClick("applicant")}>Get Started</button>
     </div>
     <div className="hero-image">
         <img src={homegif} alt="Educational Platform" />
@@ -70,7 +70,7 @@ function Home() {
             {/* Role Cards Section */}
             <section className="role-section">
                 <h2 className="h22">Get Started with EduFund</h2>
-                <div className="features-div">
+                <div className="roles-div">
                 <FeatureCard 
                     title="Applicant"
                     content="Apply for scholarships to support your education."

@@ -1,56 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import Confetti from 'react-confetti';
 import { FaUser, FaSchool, FaMoneyBill, FaInfoCircle } from 'react-icons/fa';
-import { getUserAccount, submitApplication } from '../contractUtils'; // Adjust import based on your utils structure
-import {createApplication, getApplicationByAddress, updateAppId, updateAppStatus} from '../dbUtils';
+import { getUserAccount, submitApplication } from '../contractUtils';
+import { createApplication, getApplicationByAddress, updateAppId } from '../dbUtils';
 import './ApplicantPage.css';
+import illustration1 from '../assets/appl_start.gif';
+import illustration2 from '../assets/appl_brain.gif';
+import illustration3 from '../assets/appl_bank.gif';
 
 function ApplicantPage() {
+    const [currentStep, setCurrentStep] = useState(1);
     const [hasActiveApplication, setHasActiveApplication] = useState(false);
     const [applicationStatus, setApplicationStatus] = useState(null);
     const [account, setAccount] = useState(null);
+    const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
-        fullName: 'John Doe',
-        email: 'JD@csuf.edu',
+        fullName: 'Jon Doe',
+        email: 'jod@gmail.com',
         phoneNumber: '9999999999',
-        applicantId: 'default',
-        applicantAddress: '',
         institution: 'CSUF',
         program: 'MS CS',
-        year: 'First',
+        year: 'Senior',
         gpa: '3.5',
         requestedAmount: '0.5',
-        reason: 'I need money',
-        personalStatement: 'I am Good',
-        status: 'Pending'
+        reason: 'I need Money',
+        personalStatement: 'I am good student',
+        applicantAddress: '',
+        applicantId: 'default',
     });
+    
 
-    const [errors, setErrors] = useState({});
-
+    const illustrations = [
+        illustration1,
+        illustration2,
+        illustration3,
+        illustration1
+    ];
 
     useEffect(() => {
-        // Simulate fetching application status from database or contract
-        const fetchApplicationStatus = async () => {
-            const userAccount = await getUserAccount(); //'0xABC123...'
-            console.log({userAccount});
-            setAccount(userAccount);
-            console.log({userAccount});
-            let application =  await getApplicationByAddress(userAccount);
-            
-
-            const status = null;//application?.status;
-            // const status = null; // Example: "Approved", "Rejected", "Pending", or null if no application
-            if (status) {
-                setApplicationStatus(status);
-                setHasActiveApplication(true);
+            // Simulate fetching application status from database or contract
+            const fetchApplicationStatus = async () => {
+                const userAccount = await getUserAccount(); //'0xABC123...'
+                console.log({userAccount});
+                setAccount(userAccount);
+                console.log({userAccount});
+                let application =  await getApplicationByAddress(userAccount);
                 
-            
-            }
-            console.log({account});
-            console.log({status, hasActiveApplication});
-        };
+    
+                const status = null;//application?.status;
+                // const status = null; // Example: "Approved", "Rejected", "Pending", or null if no application
+                if (status) {
+                    setApplicationStatus(status);
+                    setHasActiveApplication(true);
 
-        fetchApplicationStatus();
+                    
+                }
+                console.log({account});
+                console.log({status, hasActiveApplication});
+            };
+    
+            fetchApplicationStatus();
     }, []);
 
     const handleChange = (e) => {
@@ -59,7 +68,9 @@ function ApplicantPage() {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    // Final submission of the application
+    const handleNext = () => setCurrentStep(currentStep + 1);
+    const handlePrev = () => setCurrentStep(currentStep - 1);
+
     const handleSubmit = async () => {
         let errors = validateSection();
         
@@ -82,7 +93,7 @@ function ApplicantPage() {
                 setFormData({
                     fullName: '',
                     email: '',
-                    applicantId: null,
+                    applicantId: 'default',
                     applicantAddress: '',
                     phoneNumber: '',
                     institution: '',
@@ -121,22 +132,6 @@ function ApplicantPage() {
         // return errors;
     };
 
-    const handleClear = () => {
-        setFormData({
-            fullName: '',
-            email: '',
-            phoneNumber: '',
-            institution: '',
-            program: '',
-            year: '',
-            gpa: '',
-            requestedAmount: '',
-            reason: '',
-            personalStatement: '',
-        });
-        setErrors({});
-    };
-
     const getContent = () => {
         switch (applicationStatus) {
             case 'Approved':
@@ -168,9 +163,9 @@ function ApplicantPage() {
     const renderApplicationStatus = () => {
         const content = getContent();
 
-        return (
+        return (            
             <div className="status-card">
-                {content.showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
+                {content.showConfetti && <Confetti width="590px" height={window.innerHeight} />}
                 <h2>{content.message}</h2>
                 <img src={content.image} alt={`${applicationStatus} illustration`} className="status-image" />
                 {content.quote && <p className="quote">{content.quote}</p>}
@@ -178,93 +173,102 @@ function ApplicantPage() {
         );
     };
 
-    // Replace the renderApplicationForm function with this code
-const renderApplicationForm = () => (
-    <div className="application-form">
-        <h3>New Scholarship Application</h3>
-
-        {/* Personal Details Section */}
-        <div className="form-section">
-            <div className="section-title">
-                <FaUser className="section-icon" />
-                <h4>Personal Details</h4>
-            </div>
-            <div className="section-content">
-                <label>Full Name
-                    <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} />
-                </label>
-                <label>Email
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} />
-                </label>
-                <label>Phone Number
-                    <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
-                </label>
-            </div>
-        </div>
-
-        {/* Education Details Section */}
-        <div className="form-section">
-            <div className="section-title">
-                <FaSchool className="section-icon" />
-                <h4>Education Details</h4>
-            </div>
-            <div className="section-content">
-                <label>Institution
-                    <input type="text" name="institution" value={formData.institution} onChange={handleChange} />
-                </label>
-                <label>Program of Study
-                    <input type="text" name="program" value={formData.program} onChange={handleChange} />
-                </label>
-                <label>Year of Study
-                    <input type="text" name="year" value={formData.year} onChange={handleChange} />
-                </label>
-                <label>GPA
-                    <input type="text" name="gpa" value={formData.gpa} onChange={handleChange} />
-                </label>
-            </div>
-        </div>
-
-        {/* Financial Details Section */}
-        <div className="form-section">
-            <div className="section-title">
-                <FaMoneyBill className="section-icon" />
-                <h4>Financial Details</h4>
-            </div>
-            <div className="section-content">
-                <label>Requested Amount (ETH)
-                    <input type="number" name="requestedAmount" value={formData.requestedAmount} onChange={handleChange} />
-                </label>
-                <label>Reason for Funding
-                    <textarea name="reason" value={formData.reason} onChange={handleChange}></textarea>
-                </label>
-            </div>
-        </div>
-
-        {/* Supporting Information Section */}
-        <div className="form-section">
-            <div className="section-title">
-                <FaInfoCircle className="section-icon" />
-                <h4>Supporting Information</h4>
-            </div>
-            <div className="section-content">
-                <label>Personal Statement
-                    <textarea name="personalStatement" value={formData.personalStatement} onChange={handleChange}></textarea>
-                </label>
-            </div>
-        </div>
-
-        {/* Save and Clear Buttons */}
-        <div className="button-group">
-            <button onClick={handleSubmit}>Submit</button>
-            <button onClick={handleClear}>Clear</button>
-        </div>
-    </div>
-);
-
+    const renderFormContent = () => {
+        switch (currentStep) {
+            case 1:
+                return (
+                    <div className="form-section">
+                        <h4>Personal Details</h4>
+                        <label>Full Name
+                            <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} />
+                        </label>
+                        <label>Email
+                            <input type="email" name="email" value={formData.email} onChange={handleChange} />
+                        </label>
+                        <label>Phone Number
+                            <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
+                        </label>
+                    </div>
+                );
+            case 2:
+                return (
+                    <div className="form-section">
+                        <h4>Education Details</h4>
+                        <label>Institution
+                            <input type="text" name="institution" value={formData.institution} onChange={handleChange} />
+                        </label>
+                        <label>Program of Study
+                            <input type="text" name="program" value={formData.program} onChange={handleChange} />
+                        </label>
+                        <label>Year of Study
+                            <input type="text" name="year" value={formData.year} onChange={handleChange} />
+                        </label>
+                        <label>GPA
+                            <input type="text" name="gpa" value={formData.gpa} onChange={handleChange} />
+                        </label>
+                    </div>
+                );
+            case 3:
+                return (
+                    <div className="form-section">
+                        <h4>Financial Details</h4>
+                        <label>Requested Amount (ETH)
+                            <input type="number" name="requestedAmount" value={formData.requestedAmount} onChange={handleChange} />
+                        </label>
+                        <label>Reason for Funding
+                            <textarea name="reason" value={formData.reason} onChange={handleChange}></textarea>
+                        </label>
+                    </div>
+                );
+            case 4:
+                return (
+                    <div className="form-section">
+                        <h4>Supporting Information</h4>
+                        <label>Personal Statement
+                            <textarea name="personalStatement" value={formData.personalStatement} onChange={handleChange}></textarea>
+                        </label>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
 
     return (
         <div className="applicant-page">
-            {hasActiveApplication ? renderApplicationStatus() : renderApplicationForm()}
+            {hasActiveApplication ? renderApplicationStatus() : (
+            
+                <div className="content-wrapper">
+                <div className="illustration-container">
+                    <img src={illustrations[currentStep-1]} alt="Illustration" className="illustration" />
+                    <h3>Apply for a Scholarship</h3>
+                    <p>Follow the steps to complete your application for financial aid.</p>
+                </div>
+                <div className="form-container">
+                    <div className="step-indicator">
+                        <span className={currentStep === 1 ? "active" : ""}>1</span>
+                        <span className={currentStep === 2 ? "active" : ""}>2</span>
+                        <span className={currentStep === 3 ? "active" : ""}>3</span>
+                        <span className={currentStep === 4 ? "active" : ""}>4</span>
+                    </div>
+
+                    <div className="step-indicator">
+                        <FaUser className={currentStep === 1 ? "section-icon" : "section-icon-na"}/>
+                        <FaSchool className={currentStep === 2 ? "section-icon" : "section-icon-na"}  />
+                        <FaMoneyBill className={currentStep === 3 ? "section-icon" : "section-icon-na"}  />
+                        <FaInfoCircle className={currentStep === 4 ? "section-icon" : "section-icon-na"}  />
+                     </div>
+
+                    {renderFormContent()}
+
+                    <div className="button-group">
+                        {currentStep > 1 && <button onClick={handlePrev}>Prev</button>}
+                        {currentStep < 4 && <button onClick={handleNext}>Next</button>}
+                        {currentStep === 4 && <button onClick={handleSubmit}>Submit</button>}
+                    </div>
+                </div>
+            </div>
+            )}
         </div>
     );
 }
