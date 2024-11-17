@@ -1,0 +1,77 @@
+.record-table {
+    width: 100%;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-radius: 8px;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.controls input,
+.controls select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    flex: 1;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #f9f9f9;
+}
+
+thead th {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+}
+
+tbody td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.status-tag {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    text-transform: capitalize;
+    display: inline-block;
+}
+
+.status-tag.approved {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-tag.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-tag.rejected {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.action-btn {
+    padding: 5px 10px;
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.action-btn:hover {
+    background-color: #5754d8;
+}

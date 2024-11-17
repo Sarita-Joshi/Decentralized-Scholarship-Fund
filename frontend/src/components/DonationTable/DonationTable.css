@@ -1,0 +1,22 @@
+.fund-tag {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    text-transform: capitalize;
+    display: inline-block;
+    color: white; /* Default text color for better contrast */
+    font-weight: bold;
+}
+
+.action-btn {
+    padding: 5px 10px;
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.action-btn:hover {
+    background-color: #5754d8;
+}
