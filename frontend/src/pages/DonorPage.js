@@ -157,7 +157,7 @@ function DonorPage() {
                             totalFunds={fund.totalFunds}
                             totalApplicants={fund.totalApplicants}
                             fundsNeeded={fund.fundsNeeded}
-                            onDonate={openDialog}
+                            onDonate={() => {openDialog(fund.title)}}
                         />
                     ))}
                 </div>

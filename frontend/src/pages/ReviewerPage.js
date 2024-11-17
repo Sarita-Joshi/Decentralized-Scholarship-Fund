@@ -1,71 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import RecordTable from '../components/RecordTable';
+import ApplicantTable from '../components/ApplicantTable/ApplicantTable'; // Import ApplicantTable
+import Footer from '../components/Footer/Footer'; // Import ApplicantTable
+
 import './ReviewerPage.css';
 import { approveApplication, getUserAccount } from "../contractUtils";
 import { updateAppStatus, getAllApplications } from '../dbUtils';
 
 function ReviewerPage() {
-    // Dummy data for applications
-    const [applications, setApplications] = useState([[
-        { id: 1, applicant: '0x1234...5678', amount: '0.5 ETH', status: 'Pending' },
-        { id: 2, applicant: '0x2345...6789', amount: '1.2 ETH', status: 'Approved' },
-        { id: 3, applicant: '0x3456...7890', amount: '0.8 ETH', status: 'Rejected' },
-        { id: 4, applicant: '0x4567...8901', amount: '2.0 ETH', status: 'Pending' },
-    ]]);
-
+    const [applications, setApplications] = useState([]);
     const [account, setAccount] = useState(null);
+    const [highestDonation, setHighestDonation] = useState(0);
+    const [noOfFunds, setNoOfFunds] = useState(3); // Example static value
+    const [noOfDonations, setNoOfDonations] = useState(0);
 
     // Fetch applications on load
     useEffect(() => {
         const loadApplications = async () => {
             const userAccount = await getUserAccount();
             const appData = await getAllApplications();
-            //TODO filter and keep only pending applications
-            setApplications(appData);
+            setApplications(appData); // Set all applications
             setAccount(userAccount);
         };
         loadApplications();
     }, []);
 
-    const [filter, setFilter] = useState('All');
-
-    // Columns for RecordTable
-    const columns = ['_id', 'fullName', 'requestedAmount', 'status'];
-    const displayColumns = ['Id', 'Applicant', 'Amount', 'Status'];
-
-
-    // Actions for RecordTable
-    const actions = [
-        {
-            label: 'Approve',
-            onClick: async (row) => {
-                alert(`Approving application ID: ${row._id}`);
-                console.log(applications);
-                const appplicant = applications.filter(item => item._id === row._id)[0];
-                console.log(appplicant);
-                // Here you would implement the logic to approve this application
-                await updateApplicationStatus(appplicant.applicantId, appplicant._id, 'Approved');
-            },
-        },
-        {
-            label: 'Reject',
-            onClick: async (row) => {
-                alert(`Approving application ID: ${row._id}`);
-                const appplicant = applications.filter(item => item._id === row._id);
-                // Here you would implement the logic to approve this application
-                await updateApplicationStatus(appplicant.applicantId, appplicant._id, 'Approved');
-            },
-        },
-    ];
-
-    // Update application status in the dummy data
-    const updateApplicationStatus = async (id, mongoHash, newStatus) => {
+    // Handle application status updates
+    const handleStatusChange = async (id, mongoHash, newStatus) => {
         console.log({id, mongoHash, newStatus})
         const result = await approveApplication(id, newStatus);
         alert(result.message);
 
         if (result.success) {
-            updateAppStatus(mongoHash, newStatus);
+            await updateAppStatus(mongoHash, newStatus);
             setApplications((prevApps) =>
                 prevApps.map((app) =>
                     app._id === mongoHash ? { ...app, status: newStatus } : app
@@ -74,29 +40,67 @@ function ReviewerPage() {
         }
     };
 
-    // Filter applications based on selected status
-    const filteredApplications = applications.filter((app) =>
-        filter === 'All' ? true : app.status === filter
-    );
+    // Actions for approve/reject buttons
+    const actions = {
+        approve: async (row) => {
+            alert(`Approving application ID: ${row._id}`);
+            const appplicant = applications.filter(item => item._id === row._id)[0];
+            console.log(appplicant);
+            // Here you would implement the logic to approve this application
+            await handleStatusChange(appplicant.applicantId, appplicant._id, 'Approved');
+        },
+        reject: async (row) => {
+            alert(`Approving application ID: ${row._id}`);
+            const appplicant = applications.filter(item => item._id === row._id);
+            // Here you would implement the logic to approve this application
+            await handleStatusChange(appplicant.applicantId, appplicant._id, 'Approved');
+        },
+    };
 
     return (
-        <div>
-            <h2>Reviewer Dashboard</h2>
-            <p>Manage applications by reviewing and updating their statuses.</p>
-
-            <div className="filter-container">
-                <label>Filter by Status: </label>
-                <select onChange={(e) => setFilter(e.target.value)} value={filter}>
-                    <option value="All">All</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Rejected">Rejected</option>
-                </select>
+        <div className="reviewer-page">
+            {/* Top Ribbon with Profile and Stats */}
+            <div className="donor-ribbon">
+                <div className="profile-section">
+                    <img
+                        src="https://via.placeholder.com/100" // Replace with actual avatar
+                        alt="Donor Avatar"
+                        className="donor-avatar"
+                    />
+                    <div className="profile-details">
+                        <h3>John Doe</h3>
+                        <p>Email: john.doe@example.com</p>
+                        <p>Address: <strong>0xABC123...XYZ</strong></p>
+                    </div>
+                </div>
+                <div className="stats-section">
+                    <div className="stat-card">
+                        <p className='badge badge1'>Total Approved</p>
+                        <h3>{noOfDonations}</h3>
+                    </div>
+                    <div className="stat-card">
+                    <p className='badge badge2'>Approved Amount</p>
+                        <h3>{noOfDonations} ETH</h3>
+                    </div>
+                    <div className="stat-card">
+                    <p className='badge badge3'>Rejected Applications</p>
+                        <h3>{noOfFunds}</h3>
+                    </div>
+                    <div className="stat-card">
+                    <p className='badge badge4'>Pending Applications</p>
+                        <h3>{highestDonation} ETH</h3>
+                    </div>
+                </div>
+                
             </div>
+            {/* ApplicantTable Component */}
+            <ApplicantTable
+                data={applications}
+                actions={actions}
+                filters={{ showSearch: true, showSort: true, showFilter: true }} // Enable all filters
+            />
 
-            <div>
-                <RecordTable data={filteredApplications} columns={columns} actions={actions} headers={displayColumns} />
-            </div>
+            <Footer />
         </div>
     );
 }

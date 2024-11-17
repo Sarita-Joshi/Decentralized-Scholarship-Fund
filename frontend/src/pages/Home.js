@@ -15,8 +15,7 @@ import applgif from '../assets/appl.gif';
 
 function Home() {
     const [showLogin, setShowLogin] = useState(false);
-
-    const [role, setRole] = useState('Applicant');
+    const [role, setRole] = useState(null);
 
     const handleLoginClick = async (selectedRole) => {
         
