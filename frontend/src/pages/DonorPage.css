@@ -1,0 +1,149 @@
+.donor-page {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+}
+
+/* Top Ribbon */
+.donor-ribbon {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fdfdfd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* Profile Section */
+.profile-section {
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1; /* Take up space on the left */
+}
+
+.donor-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.profile-details h2 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.profile-details p {
+    margin: 5px 0;
+    color: #666;
+}
+
+/* Stats Section */
+.stats-section {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex: 2; /* Take up space on the right */
+}
+
+.badge {
+    display: inline-block;
+    padding: 10px 15px;
+    font-size: 0.9em;
+    font-weight: 700;
+    font-family: sans-serif;
+    border-radius: 20px; /* Rounded corners */
+    text-align: center;
+}
+
+.badge1 {
+    color: #7b6cfb; /* Text color */
+    background: rgba(123, 108, 251, 0.1); /* Soft background color */
+}
+.badge2 {
+    color: #6cfb6c; /* Text color */
+    background: rgba(108, 251, 120, 0.1); /* Soft background color */
+}
+.badge3 {
+    color: #fb6c6c; /* Text color */
+    background: rgba(251, 108, 108, 0.1); /* Soft background color */
+}
+.badge4 {
+    color: #6caafb; /* Text color */
+    background: rgba(108, 175, 251, 0.1); /* Soft background color */
+}
+
+.stat-card {
+    flex: 1;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+
+.stat-card h3 {
+    font-size: 1.5em;
+    color: #333;
+}
+
+/* Cards Container - Scrollable */
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+    margin: 0 10% 0 10%;
+}
+
+/* Center the heading */
+.top-funds-heading {
+    text-align: center; /* Centers the text horizontally */
+    font-size: 1.5em; /* Adjust the font size if needed */
+    color: #333; /* Keep the green color as shown in your image */
+    margin-bottom: 20px; /* Add some spacing below the heading */
+}
+
+
+/* Fund Card */
+.fund-card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.fund-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.fund-card h3 {
+    margin-top: 0;
+    font-size: 1.4em;
+    color: #333;
+}
+
+.fund-card p {
+    margin: 10px 0;
+    color: #666;
+}
+
+
+.donate-btn {
+    padding: 10px 15px;
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.donate-btn:hover {
+    background-color: #5754d8;
+}

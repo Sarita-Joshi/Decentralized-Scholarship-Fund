@@ -1,0 +1,100 @@
+h2 {
+    color: #4CAF50;
+}
+
+.filter-container {
+    margin-bottom: 20px;
+}
+
+select {
+    padding: 5px;
+    margin-left: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+
+/* Top Ribbon */
+.donor-ribbon {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fdfdfd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* Profile Section */
+.profile-section {
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1; /* Take up space on the left */
+}
+
+.donor-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.profile-details h2 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.profile-details p {
+    margin: 5px 0;
+    color: #666;
+}
+
+/* Stats Section */
+.stats-section {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex: 2; /* Take up space on the right */
+}
+
+.badge {
+    display: inline-block;
+    padding: 10px 15px;
+    font-size: 0.9em;
+    font-weight: 700;
+    font-family: sans-serif;
+    border-radius: 20px; /* Rounded corners */
+    text-align: center;
+}
+
+.badge1 {
+    color: #7b6cfb; /* Text color */
+    background: rgba(123, 108, 251, 0.1); /* Soft background color */
+}
+.badge2 {
+    color: #49c249; /* Text color */
+    background: rgba(53, 170, 62, 0.1); /* Soft background color */
+}
+.badge3 {
+    color: #d14646; /* Text color */
+    background: rgba(251, 108, 108, 0.1); /* Soft background color */
+}
+.badge4 {
+    color: #5290e0; /* Text color */
+    background: rgba(108, 175, 251, 0.1); /* Soft background color */
+}
+
+.stat-card {
+    flex: 1;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+
+.stat-card h3 {
+    font-size: 1.5em;
+    color: #333;
+}

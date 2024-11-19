@@ -1,0 +1,124 @@
+/* Modal Overlay */
+.profile-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal Container */
+.profile-modal {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-width: 900px;
+}
+
+/* Header Section */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.close-btn {
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: #333;
+}
+
+/* Modal Content */
+.profile-modal-content {
+    display: flex;
+    gap: 20px;
+}
+
+/* Left Section */
+.profile-left {
+    flex: 1;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.profile-picture img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.profile-basic-info p {
+    margin: 10px 0;
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Right Section */
+.profile-right {
+    flex: 2;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-details p {
+    margin: 10px 0;
+    font-size: 1rem;
+    color: #555;
+}
+
+.profile-statement {
+    margin-top: 20px;
+}
+
+.profile-statement p {
+    margin: 10px 0;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Footer Section */
+.profile-modal-footer {
+    text-align: right;
+    margin-top: 20px;
+}
+
+.close-btn-secondary {
+    padding: 8px 12px;
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.close-btn-secondary:hover {
+    background-color: #5754d8;
+}

@@ -1,0 +1,179 @@
+.applicant-table-container {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 0 10% 0 10%;
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.controls input,
+.controls select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1em;
+}
+
+thead th, tbody td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.status-tag {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    text-transform: capitalize;
+}
+
+.status-tag.approved {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-tag.pending {
+    background: #fff3e0;
+    color: #f9a825;
+}
+
+.status-tag.rejected {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.approve-btn, .reject-btn, .disburse-btn{
+    padding: 8px 10px;
+    width: fit-content;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.approve-btn {
+    background: #6c63ff;
+}
+
+.reject-btn {
+    background: #e57373;
+}
+
+.disburse-btn {
+    background: #45b83a;
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.controls input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+}
+m
+
+/* Dropdown Wrapper */
+.dropdown-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+/* Dropdown Icon */
+.dropdown-with-icon .icon {
+    font-size: 1em;
+    color: #6c63ff;
+}
+
+/* Select Dropdown */
+.dropdown-with-icon select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px; /* Rounded corners for a pill shape */
+    font-size: 0.9em;
+    font-weight: 500;
+    color: #6c63ff; /* Purple text */
+    background-color: rgba(123, 108, 251, 0.1); /* Light purple background */
+    appearance: none; /* Remove default browser arrow */
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    width: 150px; /* Adjust dropdown width */
+}
+
+/* Custom Arrow */
+.dropdown-with-icon select:after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #6c63ff; /* Custom arrow color */
+}
+
+/* Hover and Focus States */
+.dropdown-with-icon select:hover,
+.dropdown-with-icon select:focus {
+    border-color: #6c63ff;
+    box-shadow: 0 0 5px rgba(108, 99, 255, 0.3);
+}
+
+
+/* Pagination Controls */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination-btn {
+    padding: 8px 12px;
+    width: fit-content;
+    background-color: #d8d8df;
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0 10px;
+}
+
+.pagination-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 1rem;
+    color: #555;
+}
