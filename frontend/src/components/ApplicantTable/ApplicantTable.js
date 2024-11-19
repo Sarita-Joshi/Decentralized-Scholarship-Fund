@@ -25,7 +25,7 @@ const ApplicantTable = ({ data, actions, filters }) => {
     // Apply search, filter, and sorting
     const filteredApplicants = data
         .filter((applicant) =>
-            applicant.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+            applicant.fullName?.toLowerCase().includes(searchTerm.toLowerCase())
         )
         .filter((applicant) => (filterStatus ? applicant.status === filterStatus : true))
         .sort((a, b) => {
@@ -125,6 +125,17 @@ const ApplicantTable = ({ data, actions, filters }) => {
                                         </button>
                                     </>
                                 )}
+                                {filters?.showOwner && applicant.status === "Approved" && (
+                                    <>
+                                        <button
+                                            className="disburse-btn"
+                                            onClick={() => actions.approve(applicant)}
+                                        >
+                                            Disburse Funds
+                                        </button>
+                                        </>
+                                )}
+
                             </td>
                         </tr>
                     ))}

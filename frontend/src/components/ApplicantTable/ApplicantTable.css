@@ -54,7 +54,7 @@ thead th, tbody td {
     color: #d32f2f;
 }
 
-.approve-btn, .reject-btn, .view-btn{
+.approve-btn, .reject-btn, .disburse-btn{
     padding: 8px 10px;
     width: fit-content;
     margin-right: 10px;
@@ -73,8 +73,8 @@ thead th, tbody td {
     background: #e57373;
 }
 
-.view-btn {
-    background: #7746fd;
+.disburse-btn {
+    background: #45b83a;
 }
 
 /* Controls */
