@@ -1,0 +1,234 @@
+{
+  "info": {
+    "name": "Scholarship Fund API",
+    "_postman_id": "5fbf1837-e4b9-4e80-8b88-c9d83f567c54",
+    "description": "Postman collection for testing Scholarship Fund API endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Funds",
+      "item": [
+        {
+          "name": "Create Fund",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Education Fund\",\n  \"description\": \"Supports education for underprivileged students.\",\n  \"criteria\": {\n    \"minAmount\": 1000,\n    \"maxAmount\": 5000,\n    \"education\": \"Undergraduate\",\n    \"residency\": \"USA\",\n    \"demographic\": \"Women\"\n  },\n  \"ownerAddress\": \"0xOwnerAddress\",\n  \"fundAddress\": \"0xFundAddress\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/funds",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["funds"]
+            }
+          }
+        },
+        {
+          "name": "Get Fund by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:5000/funds/<FUND_ID>",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["funds", "<FUND_ID>"]
+            }
+          }
+        },
+        {
+          "name": "Get All Funds",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:5000/funds",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["funds"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "Create Application",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phoneNumber\": \"123-456-7890\",\n  \"institution\": \"State University\",\n  \"program\": \"Computer Science\",\n  \"year\": \"Senior\",\n  \"gpa\": \"3.8\",\n  \"requestedAmount\": 2500,\n  \"reason\": \"Need assistance for final year project\",\n  \"personalStatement\": \"My goal is to become a software engineer.\",\n  \"applicantAddress\": \"0xApplicantAddress\",\n  \"applicantId\": \"Applicant123\",\n  \"fundId\": \"<FUND_ID>\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/applications",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["applications"]
+            }
+          }
+        },
+        {
+          "name": "Get Applications by Fund ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:5000/applications/fund/<FUND_ID>",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["applications", "fund", "<FUND_ID>"]
+            }
+          }
+        },
+        {
+          "name": "Get Application by Address",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:5000/applications/<APPLICATION_ADDRESS>",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["applications", "<APPLICATION_ADDRESS>"]
+            }
+          }
+        },
+        {
+          "name": "Update Application Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Approved\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/applications/<APPLICATION_ID>/status",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["applications", "<APPLICATION_ID>", "status"]
+            }
+          }
+        },
+        {
+          "name": "Get All Applications",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:5000/all-applications",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["all-applications"]
+            }
+          }
+        },
+        {
+          "name": "Get Approved Applications",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:5000/approved-applications",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["approved-applications"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Donations",
+      "item": [
+        {
+          "name": "Create Donation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"donorAddress\": \"0xDonorAddress\",\n  \"amount\": 1000,\n  \"fundId\": \"<FUND_ID>\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/donations",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["donations"]
+            }
+          }
+        },
+        {
+          "name": "Get Donations by Fund ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:5000/donations/fund/<FUND_ID>",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["donations", "fund", "<FUND_ID>"]
+            }
+          }
+        },
+        {
+          "name": "Get Total Donations",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:5000/donations/total",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["donations", "total"]
+            }
+          }
+        },
+        {
+          "name": "Get All Donations",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:5000/donations",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["donations"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

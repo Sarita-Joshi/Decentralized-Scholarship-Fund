@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './DonorPage.css';
 import FundCard from '../components/FundCard/FundCard';
+import CreateFund from '../components/CreateFund/CreateFund';
 import Dialog from '../components/Dialog/Dialog';
 import Footer from '../components/Footer/Footer';
-import { makeDonation, getUserAccount } from "../contractUtils";
+import { donateToFund, getUserAccount } from "../contractUtils";
 import { createDonation, getAllDonations, getTotalDonationsMongo } from '../dbUtils';
 
 function DonorPage() {
@@ -16,6 +17,10 @@ function DonorPage() {
     const [selectedFund, setSelectedFund] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [topFunds, setTopFunds] = useState([]);
+    const [isCreateFundOpen, setIsCreateFundOpen] = useState(false);
+
+    const openCreateFund = () => setIsCreateFundOpen(true);
+    const closeCreateFund = () => setIsCreateFundOpen(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -80,7 +85,7 @@ function DonorPage() {
 
     const donateFunds = async () => {
         try {
-            const result = makeDonation(donationAmount);
+            const result = donateToFund(donationAmount);
             const account = await getUserAccount();
 
             if (result.success) {
@@ -109,7 +114,7 @@ function DonorPage() {
     
 
     return (
-                    <div className="donor-page">
+            <div className="donor-page">
             {/* Top Ribbon with Profile and Stats */}
             <div className="donor-ribbon">
                 <div className="profile-section">
@@ -123,6 +128,8 @@ function DonorPage() {
                         <p>Email: john.doe@example.com</p>
                         <p>Address: <strong>0xABC123...XYZ</strong></p>
                     </div>
+                    <button onClick={openCreateFund}>Create New Fund</button>
+
                 </div>
                 <div className="stats-section">
                     <div className="stat-card">
@@ -179,6 +186,8 @@ function DonorPage() {
                 </Dialog>
             )}
         <Footer />
+
+        <CreateFund isOpen={isCreateFundOpen} onClose={() => setIsCreateFundOpen(false)} />
         </div>
     );
 }

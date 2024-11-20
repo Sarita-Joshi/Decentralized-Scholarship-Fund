@@ -54,7 +54,7 @@ export const getUserAccount = async () => {
 };
 
 // Check if the connected account is the contract owner
-export const checkIfOwner = async (account) => {
+export const checkIfOwner = async () => {
   try {
     const contract = await getContractInstance();
     const ownerAddress = await contract.getOwner();
@@ -65,37 +65,36 @@ export const checkIfOwner = async (account) => {
   }
 };
 
-// Fetch total donations from the contract
-export const getTotalDonations = async () => {
+///////////////////////////
+// New Scholarship Features
+///////////////////////////
+
+// Create a new fund
+export const createFundOnChain = async (formData) => {
   try {
     const contract = await getContractInstance();
-    const totalDonations = await contract.getTotalDonations();
-    return ethers.utils.formatEther(totalDonations.toString());
+    const tx = await contract.createFund(
+      formData.name,
+      formData.minAmount, // Convert to smallest units
+      formData.maxAmount,
+      formData.criteriaHash.toString(),
+      formData.criteria.minApprovals
+    );
+    const receipt = await tx.wait();
+    // Extract the application ID from the event
+    const fundId = receipt.events[0].args[0];
+    return { success: true, message: "Fund created successfully!", id: fundId.toString() };
   } catch (error) {
-    console.error("Error fetching total donations:", error);
-    return null;
+    console.error("Failed to create fund:", error);
+    return { success: false, message: "Failed to create fund." };
   }
 };
 
-// Fetch applications (replace with actual data fetching logic as needed)
-export const fetchApplications = async () => {
+// Donate to a specific fund
+export const donateToFund = async (fundId, amount) => {
   try {
     const contract = await getContractInstance();
-    const applications = await contract.getApplications(); // Adjust based on your contract
-    return applications;
-  } catch (error) {
-    console.error("Error fetching applications:", error);
-    return [];
-  }
-};
-
-// Make a donation through the contract
-export const makeDonation = async (amount) => {
-  try {
-    const contract = await getContractInstance();
-    const tx = await contract.donate({
-      value: ethers.utils.parseEther(amount),
-    });
+    const tx = await contract.donate(fundId, ethers.utils.parseEther(amount));
     await tx.wait();
     return { success: true, message: "Donation successful!" };
   } catch (error) {
@@ -105,10 +104,11 @@ export const makeDonation = async (amount) => {
 };
 
 // Submit a new application to the contract
-export const submitApplication = async (applicationAmount, metadataHash) => {
+export const submitApplication = async (applicationAmount, fundID, metadataHash) => {
   try {
     const contract = await getContractInstance();
     const tx = await contract.submitApplication(
+      fundID,
       ethers.utils.parseEther(applicationAmount),
       metadataHash // This could be a hash from MongoDB or IPFS
     );
@@ -124,32 +124,70 @@ export const submitApplication = async (applicationAmount, metadataHash) => {
     return { success: false, message: "Failed to submit application.", id:null };
   }
 };
-
-// Approve an application (only for contract owner)
-export const approveApplication = async (_id, newStatus) => {
+// Approve an application
+export const approveApplication = async (fundId, applicationIndex) => {
   try {
     const contract = await getContractInstance();
-    const tx = await contract.updateApplicationStatus(_id, newStatus);
+    const tx = await contract.approveApplication(fundId, applicationIndex);
     await tx.wait();
-    return { success: true, message: `Application ${_id} ${newStatus}.` };
+    return { success: true, message: "Application approved successfully!" };
   } catch (error) {
-    console.error("Application update failed:", error);
-    return { success: false, message: "Failed to update application." };
+    console.error("Failed to approve application:", error);
+    return { success: false, message: "Failed to approve application." };
   }
 };
 
-// Disburse funds to an approved applicant (only for contract owner)
-export const disburseFunds = async (applicationId) => {
+// Disburse funds to an applicant
+export const disburseFunds = async (fundId, applicationIndex) => {
   try {
     const contract = await getContractInstance();
-    const tx = await contract.disburseFunds(applicationId);
+    const tx = await contract.disburseFunds(fundId, applicationIndex);
     await tx.wait();
     return {
       success: true,
-      message: `Funds disbursed to applicant ${applicationId}!`,
+      message: "Funds disbursed successfully!",
     };
   } catch (error) {
-    console.error("Disbursement failed:", error);
+    console.error("Failed to disburse funds:", error);
     return { success: false, message: "Failed to disburse funds." };
+  }
+};
+
+// Fetch fund details
+export const getFundDetails = async (fundId) => {
+  try {
+    const contract = await getContractInstance();
+    const fund = await contract.funds(fundId);
+    return {
+      name: fund.name,
+      owner: fund.owner,
+      minAmount: ethers.utils.formatEther(fund.minAmount),
+      maxAmount: ethers.utils.formatEther(fund.maxAmount),
+      criteria: fund.criteria,
+      approvalsNeeded: fund.approvalsNeeded.toString(),
+      balance: ethers.utils.formatEther(fund.balance),
+    };
+  } catch (error) {
+    console.error("Failed to fetch fund details:", error);
+    return null;
+  }
+};
+
+// Fetch all applications for a specific fund
+export const fetchApplicationsForFund = async (fundId) => {
+  try {
+    const contract = await getContractInstance();
+    const applications = await contract.getApplications(fundId);
+    return applications.map((app) => ({
+      applicant: app.applicant,
+      amountRequested: ethers.utils.formatEther(app.amountRequested),
+      reason: app.reason,
+      approvals: app.approvals.toString(),
+      approved: app.approved,
+      disbursed: app.disbursed,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch applications:", error);
+    return [];
   }
 };

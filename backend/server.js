@@ -1,14 +1,12 @@
-
 require('dotenv').config();
 const moment = require('moment');
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); // Import CORS package
+const cors = require('cors');
 const app = express();
 
-
 // Enable CORS for all routes
-app.use(cors()); 
+app.use(cors());
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -18,7 +16,11 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 // Middleware
 app.use(express.json());
 
-// Define Application Schema with detailed fields
+//////////////////////
+// Schemas and Models
+//////////////////////
+
+// Application Schema
 const applicationSchema = new mongoose.Schema({
     fullName: { type: String, required: true },
     email: { type: String, required: true },
@@ -33,63 +35,123 @@ const applicationSchema = new mongoose.Schema({
     applicantAddress: String,
     applicantId: { type: String, required: true },
     status: { type: String, default: "Pending" },
+    fundId: { type: mongoose.Schema.Types.ObjectId, ref: "Fund", required: true }
 }, { timestamps: true });
-
 const Application = mongoose.model("Application", applicationSchema);
 
-// Define Donation Schema
+// Fund Schema
+const fundSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    criteria: {
+        minAmount: Number,
+        maxAmount: Number,
+        education: String,
+        residency: String,
+        demographic: String,
+        minApprovals: Number
+    },
+    totalDonations: { type: Number, default: 0 },
+    ownerAddress: { type: String, required: true },
+    fundAddress: { type: String, default: 'default' }
+}, { timestamps: true });
+const Fund = mongoose.model("Fund", fundSchema);
+
+// Donation Schema
 const donationSchema = new mongoose.Schema({
     donorAddress: String,
+    fundId: { type: mongoose.Schema.Types.ObjectId, ref: "Fund", required: true },
     amount: Number,
     timestamp: { type: Date, default: Date.now }
 }, { timestamps: true });
-
 const Donation = mongoose.model("Donation", donationSchema);
+
+//////////////////////
+// Fund Routes
+//////////////////////
+
+// Create a new fund
+app.post("/funds", async (req, res) => {
+    try {
+        const fund = new Fund(req.body);
+        await fund.save();
+        res.status(201).json({ mongoDbHash: fund._id, fund });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// Get fund details by ID
+app.get("/funds/:id", async (req, res) => {
+    try {
+        const fund = await Fund.findById(req.params.id);
+        if (!fund) return res.status(404).json({ error: "Fund not found" });
+        res.json(fund);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// Get all funds
+app.get("/funds", async (req, res) => {
+    try {
+        const funds = await Fund.find();
+        res.json(funds);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
 
 //////////////////////
 // Application Routes
 //////////////////////
 
-// Create a new application and return mongoDbHash (MongoDB _id)
+// Create a new application
 app.post("/applications", async (req, res) => {
     try {
         const application = new Application(req.body);
         await application.save();
-        
-        // Send mongoDbHash (MongoDB _id) to the frontend
         res.status(201).json({ mongoDbHash: application._id, application });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-// Get an application by ID
+// Get applications for a specific fund
+app.get("/applications/fund/:fundId", async (req, res) => {
+    try {
+        const applications = await Application.find({ fundId: req.params.fundId });
+        res.json(applications);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// Other application routes remain unchanged
 app.get("/applications/:id", async (req, res) => {
     try {
-        const application = await Application.findOne({applicantAddress: req.params.id});
-        if (!application) {
-            return res.status(404).json({ error: "Application not found" });
-        }
+        const application = await Application.findOne({ applicantAddress: req.params.id });
+        if (!application) return res.status(404).json({ error: "Application not found" });
         res.json(application);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-// Update application status by ID
 app.put("/applications/:id/status", async (req, res) => {
     try {
-        const application = await Application.findOneAndUpdate({_id: req.params.id}, req.body, { new: true });
-        if (!application) {
-            return res.status(404).json({ error: "Application not found" });
-        }
+        const application = await Application.findOneAndUpdate(
+            { _id: req.params.id },
+            req.body,
+            { new: true }
+        );
+        if (!application) return res.status(404).json({ error: "Application not found" });
         res.json(application);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-// Get all approved applications
 app.get("/approved-applications", async (req, res) => {
     try {
         const approvedApplications = await Application.find({ status: "Approved" });
@@ -99,11 +161,10 @@ app.get("/approved-applications", async (req, res) => {
     }
 });
 
-// Get all approved applications
 app.get("/all-applications", async (req, res) => {
     try {
-        const approvedApplications = await Application.find();
-        res.json(approvedApplications);
+        const applications = await Application.find();
+        res.json(applications);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -118,13 +179,28 @@ app.post("/donations", async (req, res) => {
     try {
         const donation = new Donation(req.body);
         await donation.save();
+        await Fund.findByIdAndUpdate(
+            req.body.fundId,
+            { $inc: { totalDonations: req.body.amount } },
+            { new: true }
+        );
         res.status(201).json(donation);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-// Get total donations
+// Get donations for a specific fund
+app.get("/donations/fund/:fundId", async (req, res) => {
+    try {
+        const donations = await Donation.find({ fundId: req.params.fundId });
+        res.json(donations);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// Other donation routes remain unchanged
 app.get("/donations/total", async (req, res) => {
     try {
         const totalDonations = await Donation.aggregate([
@@ -137,17 +213,17 @@ app.get("/donations/total", async (req, res) => {
     }
 });
 
-// Get all donations
 app.get("/donations", async (req, res) => {
     try {
-        let donations = await Donation.find();
-        donations = donations.map((item) => ({
-            "Id": item._id.toString(),
-            "Donor Address": item.donorAddress,
-            "Amount": item.amount,
-            "Date": moment(item.timestamp).format('YYYY-MM-DD HH:mm:ss')
-        }));
-        res.json(donations);
+        const donations = await Donation.find();
+        res.json(
+            donations.map((item) => ({
+                Id: item._id.toString(),
+                "Donor Address": item.donorAddress,
+                Amount: item.amount,
+                Date: moment(item.timestamp).format('YYYY-MM-DD HH:mm:ss'),
+            }))
+        );
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
