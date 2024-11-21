@@ -1,14 +1,18 @@
 pragma solidity ^0.8.0;
 
-import "./DonationContract.sol";
-import "./ApplicationContract.sol";
-import "./DisbursementContract.sol";
-
 contract ScholarshipFund {
     address public owner;
-    DonationContract public donationContract;
-    ApplicationContract public applicationContract;
-    DisbursementContract public disbursementContract;
+    uint256 public applicationCount;
+
+    struct Application {
+        uint256 id;
+        address applicant;
+        uint256 requestedAmount;
+        string mongoDbHash;
+        string status; //[Pending, Approved, Rejected, Funded]
+    }
+
+    mapping(uint256 => Application) public applications;
 
     event ApplicationSubmitted(uint256 id, string mongoDbHash);
     event ApplicationStatusUpdated(uint256 id, string status);
@@ -23,59 +27,77 @@ contract ScholarshipFund {
 
     constructor() {
         owner = msg.sender;
-        donationContract = new DonationContract();
-        applicationContract = new ApplicationContract();
-        disbursementContract = new DisbursementContract();
     }
 
-    // Function to accept donations
-    function donate() external payable {
-        require(msg.value > 0, "Donation must be greater than zero");
-        donationContract.donate{ value: msg.value }();
-        emit DonationReceived(msg.sender, msg.value);
-    }
-
-    // Function to get total donations
-    function getTotalDonations() external view returns (uint256) {
-        return donationContract.getTotalDonations();
-    }
-
-    // Functions to interact with ApplicationContract
-    function submitApplication( uint256 _requestedAmount, string memory _mongoDbHash) external returns (uint256){
-        uint256 app_id = applicationContract.submitApplication(_requestedAmount, _mongoDbHash);
-        emit ApplicationSubmitted(app_id, _mongoDbHash);
-        return app_id;
+    // Application Functions
+    function submitApplication(uint256 _requestedAmount, string memory _mongoDbHash)
+        external
+        returns (uint256)
+    {
+        applicationCount++;
+        applications[applicationCount] = Application(
+            applicationCount,
+            msg.sender,
+            _requestedAmount,
+            _mongoDbHash,
+            "Pending"
+        );
+        emit ApplicationSubmitted(applicationCount, _mongoDbHash);
+        return applicationCount;
     }
 
     function updateApplicationStatus(uint256 _id, string memory _status) external onlyOwner {
-        applicationContract.updateApplicationStatus(_id, _status);
+        require(_id <= applicationCount, "Application does not exist");
+        applications[_id].status = _status;
         emit ApplicationStatusUpdated(_id, _status);
     }
 
-    // Function to fund the Disbursement Contract
-    function fundDisbursementContract() external payable onlyOwner {
-        require(msg.value > 0, "Amount must be greater than zero");
-        payable(address(disbursementContract)).transfer(msg.value);
+    function getApplication(uint256 _id)
+        external
+        view
+        returns (
+            uint256,
+            address,
+            uint256,
+            string memory,
+            string memory
+        )
+    {
+        require(_id <= applicationCount, "Application does not exist");
+        Application memory app = applications[_id];
+        return (
+            app.id,
+            app.applicant,
+            app.requestedAmount,
+            app.mongoDbHash,
+            app.status
+        );
     }
 
-    // Function to disburse funds to an approved applicant
+    // Donation Functions
+    function donate() external payable {
+        require(msg.value > 0, "Donation amount must be greater than 0");
+        emit DonationReceived(msg.sender, msg.value);
+    }
+
+    function getBalance() external view returns (uint256) {
+        return address(this).balance;
+    }
+
+    // Disbursement Functions
     function disburseFunds(uint256 _applicationId) external onlyOwner {
-        // Get application details from ApplicationContract
-        (, address applicant, uint256 requestedAmount, , string memory status) = applicationContract.applications(_applicationId);
+        require(_applicationId <= applicationCount, "Application does not exist");
+        Application storage app = applications[_applicationId];
+        require(
+            keccak256(bytes(app.status)) == keccak256(bytes("Approved")),
+            "Application must be approved"
+        );
+        require(app.requestedAmount <= address(this).balance, "Insufficient funds");
 
-        require(keccak256(bytes(status)) == keccak256(bytes("Approved")), "Application is not approved");
+        app.status = "Funded";
 
-        // Call disburseFunds on DisbursementContract
-        disbursementContract.disburseFunds( payable(applicant), requestedAmount);
-        emit FundsDisbursed(_applicationId, requestedAmount);
-    }
-
-    function getOwner() external view returns (address) {
-        return owner;
-    }
-
-    // Function to get balance of DisbursementContract
-    function getDisbursementBalance() external view returns (uint256) {
-        return disbursementContract.getBalance();
+        (bool success, ) = app.applicant.call{value: app.requestedAmount}("");
+        require(success, "Disbursement failed");
+        emit FundsDisbursed(_applicationId, app.requestedAmount);
     }
 }

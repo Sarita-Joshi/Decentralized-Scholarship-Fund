@@ -47,7 +47,7 @@ function ApplicantPage() {
                 let application =  await getApplicationByAddress(userAccount);
                 
     
-                const status = null;//application?.status;
+                const status = application?.status;
                 // const status = null; // Example: "Approved", "Rejected", "Pending", or null if no application
                 if (status) {
                     setApplicationStatus(status);
@@ -141,6 +141,13 @@ function ApplicantPage() {
                     quote: '',
                     showConfetti: true
                 };
+            case 'Funded':
+                return {
+                    message: "Congratulations! Your Scholarhip is on it's way! Please wait for upto 24 hours to receive scholarship funds.",
+                    image: 'approved_image_url', // Replace with celebratory image URL
+                    quote: '',
+                    showConfetti: true
+                };
             case 'Rejected':
                 return {
                     message: "Unfortunately, your application was not approved.",
@@ -165,7 +172,7 @@ function ApplicantPage() {
 
         return (            
             <div className="status-card">
-                {content.showConfetti && <Confetti width="590px" height={window.innerHeight} />}
+                {content.showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
                 <h2>{content.message}</h2>
                 <img src={content.image} alt={`${applicationStatus} illustration`} className="status-image" />
                 {content.quote && <p className="quote">{content.quote}</p>}

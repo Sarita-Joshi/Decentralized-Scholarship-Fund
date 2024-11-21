@@ -4,7 +4,7 @@ import DonorTable from "../components/DonationTable/DonationTable";
 import Footer from "../components/Footer/Footer";
 import "./OwnerPage.css";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import { approveApplication, getUserAccount } from "../contractUtils";
+import { approveApplication, disburseFunds, getUserAccount } from "../contractUtils";
 import { updateAppStatus, getAllApplications } from "../dbUtils";
 // import {
 //     Chart as ChartJS,
@@ -157,6 +157,21 @@ function OwnerPage() {
     }
   };
 
+  const handleDisbursement = async (id, mongoHash) => {
+    console.log({ id, mongoHash });
+    const result = await disburseFunds(id);
+    alert(result.message);
+
+    if (result.success) {
+      await updateAppStatus(mongoHash, 'Funded');
+      setApplications((prevApps) =>
+        prevApps.map((app) =>
+          app._id === mongoHash ? { ...app, status: 'Funded' } : app
+        )
+      );
+    }
+  };
+
   // Actions for approve/reject buttons
   const actions = {
     approve: async (row) => {
@@ -170,16 +185,27 @@ function OwnerPage() {
         "Approved"
       );
     },
-    reject: async (row) => {
-      alert(`Approving application ID: ${row._id}`);
-      const appplicant = applications.filter((item) => item._id === row._id);
+    reject:  async (row) => {
+      alert(`Rejecting application ID: ${row._id}`);
+      const appplicant = applications.filter((item) => item._id === row._id)[0];
+      console.log(appplicant);
       // Here you would implement the logic to approve this application
       await handleStatusChange(
         appplicant.applicantId,
         appplicant._id,
-        "Approved"
+        "Rejected"
       );
     },
+    disburse: async (row) => {
+      alert(`Sending funds to application ID: ${row._id}`);
+      const appplicant = applications.filter((item) => item._id === row._id)[0];
+      console.log(appplicant);
+      // Here you would implement the logic to approve this application
+      await handleDisbursement(
+        appplicant.applicantId,
+        appplicant._id
+      );
+    }
   };
 
   return (

@@ -17,6 +17,8 @@
 
 .status-card {
     max-width: 800px;
+    width: fit-content;
+    height: fit-content;
     margin: 0 auto;
     background: #fff;
     padding: 30px;

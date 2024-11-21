@@ -142,7 +142,7 @@ export const approveApplication = async (_id, newStatus) => {
 export const disburseFunds = async (applicationId) => {
   try {
     const contract = await getContractInstance();
-    const tx = await contract.disburseFunds(applicationId);
+    const tx = await contract.disburseFunds(parseInt(applicationId, 10));
     await tx.wait();
     return {
       success: true,

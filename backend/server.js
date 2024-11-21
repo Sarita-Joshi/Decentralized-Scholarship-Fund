@@ -46,6 +46,16 @@ const donationSchema = new mongoose.Schema({
 
 const Donation = mongoose.model("Donation", donationSchema);
 
+async function deleteIncompleteApplications() {
+    try {
+        const result = await Application.deleteMany({ applicantId: "default" });
+        return `${result.deletedCount} incomplete applications deleted successfully.`;
+    } catch (error) {
+        throw new Error(`Error deleting incomplete applications: ${error.message}`);
+    }
+}
+
+
 //////////////////////
 // Application Routes
 //////////////////////
@@ -102,6 +112,7 @@ app.get("/approved-applications", async (req, res) => {
 // Get all approved applications
 app.get("/all-applications", async (req, res) => {
     try {
+        await deleteIncompleteApplications();
         const approvedApplications = await Application.find();
         res.json(approvedApplications);
     } catch (error) {

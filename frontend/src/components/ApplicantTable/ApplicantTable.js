@@ -129,7 +129,7 @@ const ApplicantTable = ({ data, actions, filters }) => {
                                     <>
                                         <button
                                             className="disburse-btn"
-                                            onClick={() => actions.approve(applicant)}
+                                            onClick={() => actions.disburse(applicant)}
                                         >
                                             Disburse Funds
                                         </button>
