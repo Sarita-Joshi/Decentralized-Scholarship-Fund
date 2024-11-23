@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './DonorPage.css';
 import FundCard from '../components/FundCard/FundCard';
+import CreateFundModal from '../components/CreateFundModal';
 import Dialog from '../components/Dialog/Dialog';
 import Footer from '../components/Footer/Footer';
 import { makeDonation, getUserAccount } from "../contractUtils";
@@ -15,6 +16,7 @@ function DonorPage() {
     const [noOfDonations, setNoOfDonations] = useState(0);
     const [selectedFund, setSelectedFund] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isCreateFundModalOpen, setIsCreateFundModalOpen] = useState(false);
     const [topFunds, setTopFunds] = useState([]);
 
     useEffect(() => {
@@ -106,6 +108,17 @@ function DonorPage() {
             alert("Failed to process donation. Please check console for details.");
         }
     };
+
+    const handleCreateFund = () => {
+        setIsCreateFundModalOpen(true);
+    };
+
+    const handleCreateFundSubmit = (fundData) => {
+        console.log("New Fund Created:", fundData);
+        // Handle fund creation logic here
+        setIsCreateFundModalOpen(false);
+    };
+
     
 
     return (
@@ -123,6 +136,9 @@ function DonorPage() {
                         <p>Email: john.doe@example.com</p>
                         <p>Address: <strong>0xABC123...XYZ</strong></p>
                     </div>
+                    <button className="create-fund-button" onClick={handleCreateFund}>
+                    Create New Fund
+                    </button>
                 </div>
                 <div className="stats-section">
                     <div className="stat-card">
@@ -178,6 +194,14 @@ function DonorPage() {
                         onChange={(e) => setDonationAmount(e.target.value)}
                     />
                 </Dialog>
+            )}
+
+            {isCreateFundModalOpen && (
+                <CreateFundModal
+                    isOpen={isCreateFundModalOpen}
+                    onClose={() => setIsCreateFundModalOpen(false)}
+                    onSubmit={handleCreateFundSubmit}
+                />
             )}
         <Footer />
         </div>
