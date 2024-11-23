@@ -70,7 +70,6 @@ const DonationTable = () => {
                         <th>Amount (ETH)</th>
                         <th>Date</th>
                         <th>Fund</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -89,9 +88,6 @@ const DonationTable = () => {
                                 >
                                     {donation.fund}
                                 </span>
-                            </td>
-                            <td>
-                                <button className="action-btn">View</button>
                             </td>
                         </tr>
                     ))}

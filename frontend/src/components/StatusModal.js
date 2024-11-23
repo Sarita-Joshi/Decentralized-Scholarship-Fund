@@ -1,6 +1,7 @@
 import React from 'react';
-import Confetti from 'react-confetti';
+import Lottie from "lottie-react";
 import './StatusModal.css';
+import celebrationAnimationData from '../assets/celebration.json'; // Example Lottie file
 
 function StatusModal({ status, onClose }) {
     // Determine modal content based on the status
@@ -11,35 +12,49 @@ function StatusModal({ status, onClose }) {
                     message: "Congratulations! Your application is approved!",
                     image: 'approved_image_url', // Replace with celebratory image URL
                     quote: '',
-                    showConfetti: true
+                    showCelebration: true
                 };
             case 'Rejected':
                 return {
                     message: "Unfortunately, your application was not approved.",
                     image: 'rejected_image_url', // Replace with sad image URL
                     quote: "Don't lose faith! Try harder next time. All the best!",
-                    showConfetti: false
+                    showCelebration: false
                 };
             case 'Pending':
                 return {
                     message: "Your application is still pending.",
                     image: 'pending_image_url', // Replace with waiting/pending image URL
                     quote: "Don't lose faith! We’ll get back to you soon.",
-                    showConfetti: false
+                    showCelebration: false
                 };
             default:
-                return null;
+                return {
+                    message: "You do not have an active application.",
+                    image: 'no_application_image_url', // Replace with no application image URL
+                    quote: "Start your first application!",
+                    showCelebration: false
+                };
         }
     };
 
     const content = getContent();
 
-    if (!content) return null;
+    const celebrationOptions = {
+        loop: false,
+        autoplay: true,
+        animationData: celebrationAnimationData,
+        rendererSettings: {
+            preserveAspectRatio: "xMidYMid slice"
+        }
+    };
 
     return (
         <div className="status-modal-overlay">
             <div className="status-modal">
-                {content.showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
+                {content.showCelebration && (
+                    <Lottie options={celebrationOptions} height={150} width={150} />
+                )}
                 
                 <button className="close-button" onClick={onClose}>X</button>
                 

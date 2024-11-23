@@ -157,6 +157,7 @@ function DonorPage() {
                             totalFunds={fund.totalFunds}
                             totalApplicants={fund.totalApplicants}
                             fundsNeeded={fund.fundsNeeded}
+                            buttonLabel={null}
                             onDonate={() => {openDialog(fund.title)}}
                         />
                     ))}

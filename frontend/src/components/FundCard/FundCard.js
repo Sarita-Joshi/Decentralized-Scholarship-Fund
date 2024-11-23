@@ -13,6 +13,7 @@ const FundCard = ({
     totalFunds,
     totalApplicants,
     fundsNeeded,
+    buttonLabel,
     onDonate,
 }) => {
 
@@ -44,7 +45,7 @@ const FundCard = ({
                     </p>
                 </div>
                 <button className="donate-btn" onClick={onDonate}>
-                    Donate Now
+                    {buttonLabel!==null? buttonLabel : "Donate Now"}
                 </button>
             </div>
         </div>
