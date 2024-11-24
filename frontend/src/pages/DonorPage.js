@@ -4,12 +4,13 @@ import FundCard from '../components/FundCard/FundCard';
 import CreateFundModal from '../components/CreateFundModal';
 import Dialog from '../components/Dialog/Dialog';
 import Footer from '../components/Footer/Footer';
-import { makeDonation, getUserAccount } from "../contractUtils";
-import { createDonation, getAllDonations, getTotalDonationsMongo } from '../dbUtils';
+import { makeDonation, getUserAccount, CreateFundOnChain } from "../contractUtils";
+import { createDonation, createFundMongo, getAllDonations, getAllFunds, getTotalDonationsMongo, updateFundStatus } from '../dbUtils';
 
 function DonorPage() {
     const [donationAmount, setDonationAmount] = useState("");
     const [totalDonations, setTotalDonations] = useState(0);
+    const [account, setAccount] = useState(null);
     const [donationList, setDonationList] = useState([]);
     const [highestDonation, setHighestDonation] = useState(0);
     const [noOfFunds, setNoOfFunds] = useState(3); // Example static value
@@ -21,6 +22,14 @@ function DonorPage() {
 
     useEffect(() => {
         const loadData = async () => {
+            const userAccount = await getUserAccount();
+            setAccount(userAccount);
+
+            const funds = await getAllFunds('true');
+            console.log(funds);
+            setTopFunds(funds)
+            
+
             const total = await getTotalDonationsMongo();
             setTotalDonations(total);
 
@@ -35,36 +44,6 @@ function DonorPage() {
                 setNoOfDonations(donations.length);
             }
 
-            // Example data for top funds
-            setTopFunds([
-                {
-                    id: 1,
-                    banner: null,
-                    title: "Education Fund",
-                    subtitle: "Support students in need of financial aid.",
-                    totalFunds: 10,
-                    totalApplicants: 50,
-                    fundsNeeded: 20,
-                },
-                {
-                    id: 2,
-                    banner: null,
-                    title: "Health Fund",
-                    subtitle: "Help communities with better healthcare facilities.",
-                    totalFunds: 5,
-                    totalApplicants: 30,
-                    fundsNeeded: 15,
-                },
-                {
-                    id: 3,
-                    banner: null,
-                    title: "Animal Welfare Fund",
-                    subtitle: "Protect and care for animals in need.",
-                    totalFunds: 2,
-                    totalApplicants: 10,
-                    fundsNeeded: 10,
-                },
-            ]);
         };
         loadData();
     }, []);
@@ -83,7 +62,6 @@ function DonorPage() {
     const donateFunds = async () => {
         try {
             const result = makeDonation(donationAmount);
-            const account = await getUserAccount();
 
             if (result.success) {
                 createDonation({
@@ -113,12 +91,32 @@ function DonorPage() {
         setIsCreateFundModalOpen(true);
     };
 
-    const handleCreateFundSubmit = (fundData) => {
-        console.log("New Fund Created:", fundData);
-        // Handle fund creation logic here
-        setIsCreateFundModalOpen(false);
-    };
+    const validateSection = (formData) => {
+        return []
+    }
 
+    const handleCreateFundSubmit = async (formData) => {
+        
+            let errors = validateSection(formData);
+            if (Object.keys(errors).length === 0) {
+                console.log("Fund Created:", formData);
+                formData.fundOwner = account;
+                console.log({formData, account});
+                const result = await CreateFundOnChain(formData);
+                if (result.success) {
+                    alert(result.message);
+                    console.log({id:result.id, log:'sdsdgdsgsdsg'})
+                    const newFund = await createFundMongo({...formData, fundId: result.id.toString()});
+
+                    setTopFunds([...topFunds, newFund])
+                } else {
+                    alert(result.message);
+                }
+                
+            } else {
+                alert("Please complete all sections before submitting.");
+            }
+        };
     
 
     return (

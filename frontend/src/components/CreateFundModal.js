@@ -16,12 +16,12 @@ const CreateFundModal = ({ isOpen, onClose, onSubmit }) => {
     eligibilityEducation: "",
     eligibilityLocation: "",
     minimumContribution: 0,
-    targetAmount: 20,
+    initialBalance: 20,
     fundStartDate: "",
     fundEndDate: "",
-    reviewers: "",
+    reviewers: [],
     minimumApprovals: 0,
-    fundManager: "self",
+    autoDisburseFunds: false,
     fundCategory: "education",
   });
 
@@ -69,10 +69,7 @@ const CreateFundModal = ({ isOpen, onClose, onSubmit }) => {
   const handlePrev = () => setCurrentStep((prev) => prev - 1);
 
   const handleSubmit = () => {
-    if (Object.values(formData).some((field) => !field)) {
-      alert("Please fill out all fields.");
-      return;
-    }
+    console.log(['fundModal', formData]);
     onSubmit(formData);
     onClose();
   };
@@ -150,24 +147,24 @@ const CreateFundModal = ({ isOpen, onClose, onSubmit }) => {
           <div className="form-section">
             <h4>Fund Requirements</h4>
             <div className="inline-fields">
-            <label>
-              Target Amount (ETH)
-              <input
-                type="number"
-                name="targetAmount"
-                value={formData.targetAmount}
-                onChange={handleChange}
-              />
-            </label>
-            <label>
-              Minimum Contribution (ETH)
-              <input
-                type="number"
-                name="minimumContribution"
-                value={formData.minimumContribution}
-                onChange={handleChange}
-              />
-            </label>
+              <label>
+                Initial Balance (ETH)
+                <input
+                  type="number"
+                  name="initialBalance"
+                  value={formData.initialBalance}
+                  onChange={handleChange}
+                />
+              </label>
+              <label>
+                Minimum Contribution (ETH)
+                <input
+                  type="number"
+                  name="minimumContribution"
+                  value={formData.minimumContribution}
+                  onChange={handleChange}
+                />
+              </label>
             </div>
             <div className="inline-fields">
               <label>
@@ -219,15 +216,6 @@ const CreateFundModal = ({ isOpen, onClose, onSubmit }) => {
               />
             </label>
             <label>
-              Fund Manager
-              <input
-                type="text"
-                name="fundManager"
-                value={formData.fundManager}
-                onChange={handleChange}
-              />
-            </label>
-            <label>
               Fund Category
               <input
                 type="text"
@@ -235,6 +223,23 @@ const CreateFundModal = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.fundCategory}
                 onChange={handleChange}
               />
+            </label>
+            <label className="label">
+              Automatic Disburse Funds
+              <div className="switch">
+                <input
+                  type="checkbox"
+                  name="autoDisburseFunds"
+                  checked={formData.autoDisburseFunds || false}
+                  onChange={(e) =>
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      autoDisburseFunds: e.target.checked,
+                    }))
+                  }
+                />
+                <span className="slider"></span>
+              </div>
             </label>
           </div>
         );
