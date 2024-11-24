@@ -7,7 +7,7 @@ import illustration2 from '../assets/appl_brain.gif';
 import illustration3 from '../assets/appl_bank.gif';
 
 
-const ApplicationFormModal = ({ fund, onClose }) => {
+const ApplicationFormModal = ({ fund, onClose, onSubmit }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     fullName: 'Jon Doe',
@@ -42,6 +42,7 @@ const ApplicationFormModal = ({ fund, onClose }) => {
   
   const handleSubmit = () => {
     console.log("Application Submitted:", formData);
+    onSubmit(formData);
     alert("Application Submitted Successfully!");
     onClose();
   };

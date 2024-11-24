@@ -5,7 +5,7 @@ import ApplicantPage from './pages/ApplicantPage';
 import DonorPage from './pages/DonorPage';
 import ReviewerPage from './pages/ReviewerPage';
 import OwnerPage from './pages/OwnerPage';
-
+import FundOwnerPage from './pages/FundOwnerDashboard/FundOwnerDashboard';
 function App() {
     return (
         <Router>
@@ -15,6 +15,7 @@ function App() {
                 <Route path="/donor" element={<DonorPage />} />
                 <Route path="/reviewer" element={<ReviewerPage />} />
                 <Route path="/owner" element={<OwnerPage />} />
+                <Route path="/fund-owner" element={<FundOwnerPage />} />
             </Routes>
         </Router>
     );

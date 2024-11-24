@@ -32,7 +32,7 @@ const applicationSchema = new mongoose.Schema({
   applicantAddress: String,
   applicantId: { type: String, required: true },
   status: { type: String, default: "Pending" },
-  fundId: { type: mongoose.Schema.Types.ObjectId, ref: "Fund", required: true }, // Link to Fund
+  fundId: { type: String, required: true }, // Link to Fund
 }, { timestamps: true });
 
 const Application = mongoose.model("Application", applicationSchema);
@@ -63,7 +63,7 @@ const Fund = mongoose.model("Fund", fundSchema);
 const donationSchema = new mongoose.Schema({
   donorAddress: String,
   amount: Number,
-  fundId: { type: mongoose.Schema.Types.ObjectId, ref: "Fund", required: true }, // Link to Fund
+  fundId: { type: String, required: true }, // Link to Fund
   timestamp: { type: Date, default: Date.now },
 }, { timestamps: true });
 

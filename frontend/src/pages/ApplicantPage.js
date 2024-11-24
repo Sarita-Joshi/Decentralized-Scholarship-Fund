@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import FundCard from "../components/FundCard/FundCard";
 import ApplicationFormModal from "../components/ApplicationFormModal"; // Import the form modal
 import StatusModal from "../components/StatusModal"; 
-import { getUserAccount } from '../contractUtils';
-import { getApplicationByAddress } from '../dbUtils';
+import { getUserAccount, submitApplication } from '../contractUtils';
+import { createApplication, getAllFunds, getApplicationByAddress, updateAppId } from '../dbUtils';
 import "./ApplicantPage.css";
 
 const ApplicantPage = () => {
@@ -15,7 +15,7 @@ const ApplicantPage = () => {
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   // Function to handle opening the modal
   const openStatusModal = (status) => {
-      setApplicationStatus("Approved"); // Set the application status
+      setApplicationStatus(status); // Set the application status
       setIsStatusModalOpen(true);        // Show the modal
   };
 
@@ -35,36 +35,8 @@ const ApplicantPage = () => {
       const application = await getApplicationByAddress(userAccount);
       setApplicationStatus(application?.status || null);
 
-      // Load funds data
-      setFunds([
-        {
-          id: 1,
-          banner: null,
-          title: "Education Fund",
-          subtitle: "Support students in need of financial aid.",
-          totalFunds: 10,
-          totalApplicants: 50,
-          fundsNeeded: 20,
-        },
-        {
-          id: 2,
-          banner: null,
-          title: "Health Fund",
-          subtitle: "Help communities with better healthcare facilities.",
-          totalFunds: 5,
-          totalApplicants: 30,
-          fundsNeeded: 15,
-        },
-        {
-          id: 3,
-          banner: null,
-          title: "Animal Welfare Fund",
-          subtitle: "Protect and care for animals in need.",
-          totalFunds: 2,
-          totalApplicants: 10,
-          fundsNeeded: 10,
-        },
-      ]);
+      const topFunds = await getAllFunds('true');
+      setFunds(topFunds);
     };
 
     loadData();
@@ -81,9 +53,55 @@ const ApplicantPage = () => {
   };
 
   const handleCheckStatus = () => {
-    // Navigate to application status (or show modal)
     openStatusModal();
   };
+
+  const handleSubmit = async (formData) => {
+    let errors = validateSection();
+    
+    if (Object.keys(errors).length === 0) {
+
+        formData.fundId = selectedFund.id;
+        console.log("Application Submitted:", formData);
+        formData.applicantAddress = account;
+        console.log({formData, account});
+        const mongoDBHash = await createApplication(formData);
+        
+        const result = await submitApplication(
+            formData.requestedAmount.toString(),
+            mongoDBHash.toString(),
+        );
+
+        if (result.success) {
+            alert(result.message);
+            console.log({mongoDBHash, id:result.id, log:'sdsdgdsgsdsg'})
+            updateAppId(mongoDBHash.toString(), result.id.toString())
+            setApplicationStatus("Pending");
+        } else {
+            alert(result.message);
+        }
+        
+    } else {
+        alert("Please complete all sections before submitting.");
+    }
+};
+
+// Validate fields for each section
+const validateSection = () => {
+    return {};
+    // const errors = {};
+    // if (!formData.fullName) errors.fullName = "Full Name is required";
+    // if (!formData.email) errors.email = "Email is required";
+    // if (!formData.phoneNumber) errors.phoneNumber = "Phone Number is required";
+
+    // if (!formData.institution) errors.institution = "Institution is required";
+    // if (!formData.program) errors.program = "Program of Study is required";
+
+    // if (!formData.requestedAmount) errors.requestedAmount = "Requested Amount is required";
+    // if (!formData.reason) errors.reason = "Reason for Funding is required";
+    
+    // return errors;
+};
 
   return (
     <div className="browse-funds-page">
@@ -131,6 +149,7 @@ const ApplicantPage = () => {
         <ApplicationFormModal
           fund={selectedFund}
           onClose={closeApplicationModal}
+          onSubmit={handleSubmit}
         />
       )}
 
