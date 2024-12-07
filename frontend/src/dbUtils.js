@@ -157,16 +157,20 @@ export const createDonation = async (donationData) => {
     }
 };
 
-// Get total donations amount
-export const getTotalDonationsMongo = async () => {
+// Get metrics
+export const getMetricsMongo = async (data) => {
+
+    const { fundOwner, donorAddress } = data;
     try {
-        const response = await axios.get(`${API_BASE_URL}/donations/total`);
-        return response.data.total;
+        const response = await axios.get(`${API_BASE_URL}/metrics?fundOwner=${fundOwner}&donorAddress${donorAddress}`);
+        return response.data;
     } catch (error) {
         console.error("Error fetching total donations:", error);
         throw error;
     }
 };
+
+
 
 // Get all donations
 export const getAllDonations = async () => {

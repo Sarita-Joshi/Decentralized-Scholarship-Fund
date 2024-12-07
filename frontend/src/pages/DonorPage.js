@@ -6,7 +6,7 @@ import CreateFundModal from '../components/CreateFundModal/CreateFundModal';
 import Dialog from '../components/Dialog/Dialog';
 import Footer from '../components/Footer/Footer';
 import { makeDonation, getUserAccount, CreateFundOnChain } from "../contractUtils";
-import { createDonation, createFundMongo, getAllFunds } from '../dbUtils';
+import { createDonation, createFundMongo, getAllApplications, getAllFunds, getMetricsMongo } from '../dbUtils';
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PaymentIcon from "@mui/icons-material/Payment";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
@@ -19,6 +19,7 @@ function DonorPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isCreateFundModalOpen, setIsCreateFundModalOpen] = useState(false);
     const [topFunds, setTopFunds] = useState([]);
+    
     const [metrics, setMetrics] = useState({
         totalApplications: 0,
         totalApplicationAmount:0,
@@ -39,6 +40,15 @@ function DonorPage() {
             console.log(funds);
             setTopFunds(funds)
 
+            // const totalDonations = donationData.reduce(
+            //     (sum, donation) => sum + donation.Amount,
+            //     0
+            // );
+            const metrics_ = await getMetricsMongo({donorAddress: userAccount});
+            setMetrics(metrics_);
+
+            console.log(metrics_);
+
         };
         loadData();
     }, []);
@@ -50,12 +60,12 @@ function DonorPage() {
           total: metrics.totalApplications,
           subCategories: `${
             metrics.totalApplications - metrics.fundedApplications
-          } Active`,
+          } Active, ${metrics.fundedApplications} Funded`,
         },
         {
           title: "Requested Amount",
           icon: <VolunteerActivismIcon style={{ color: "#7E57C2" }} />,
-          total: `${metrics.totalDonations} ETH`,
+          total: `${metrics.totalApplicationAmount} ETH`,
           subCategories: "Across all funds",
         },
         {
@@ -67,7 +77,7 @@ function DonorPage() {
         {
           title: "Active Funds",
           icon: <PeopleAltIcon style={{ color: "#7E57C2" }} />,
-          total: "15",
+          total: topFunds.length,
           subCategories: "Active Funds",
         },
       ];
@@ -78,13 +88,14 @@ function DonorPage() {
         email: "john.doe@example.com",
         address: "123 Blockchain Avenue, Ethereum City",
       };
-    
 
+    const cta = {
+        label: "Create New Fund",
+        onClick: () => setIsCreateFundModalOpen(true),
+      };
 
-
-
-    const openDialog = (fundName) => {
-        setSelectedFund(fundName);
+    const openDialog = (fund) => {
+        setSelectedFund(fund);
         setIsDialogOpen(true);
     };
 
@@ -93,15 +104,23 @@ function DonorPage() {
         setDonationAmount("");
     };
 
-    const donateFunds = async () => {
+    const donateFunds = async (fund) => {
         try {
-            const result = makeDonation(donationAmount);
+            console.log(`donatiingg...${selectedFund?.title}  ${fund?.title}`)
+            const fundName = selectedFund?.title;
+            const fundOwner = selectedFund?.fundOwner;
+            const fundId = selectedFund?.id;
 
+            const result = await makeDonation(donationAmount, fundId);
+            console.log(`donated...${selectedFund?.title}`)
+            
             if (result.success) {
-                createDonation({
+                await createDonation({
                     "donorAddress": account,
                     "amount": donationAmount,
-                    // "fund": selectedFund,
+                    "fundOwner": fundOwner,
+                    "fundName": fundName,
+                    "fundId": fundId,
                 });
             }
 
@@ -147,7 +166,7 @@ function DonorPage() {
     return (
                     <div className="donor-page">
             {/* Top Ribbon with Profile and Stats */}
-            <Header profile={profile} stats={stats} />
+            <Header profile={profile} stats={stats} cta={cta}/>
 
             {/* Top Funds Section */}
             <div className="donation-cards">
@@ -163,7 +182,7 @@ function DonorPage() {
                             totalApplicants={fund.totalApplicants}
                             fundsNeeded={fund.fundsNeeded}
                             buttonLabel={null}
-                            onDonate={() => {openDialog(fund.title)}}
+                            onDonate={() => {openDialog(fund)}}
                         />
                     ))}
                 </div>
@@ -171,8 +190,8 @@ function DonorPage() {
 
             {isDialogOpen && (
                 <Dialog
-                    title={`Donate to ${selectedFund}`}
-                    onConfirm={donateFunds}
+                    title={`Donate to ${selectedFund.title}`}
+                    onConfirm={() => donateFunds(selectedFund) }
                     onCancel={closeDialog}
                 >
                     <p>Enter the amount you want to donate (in ETH):</p>

@@ -20,6 +20,8 @@ function ReviewerPage() {
             const appData = await getAllApplications();
             setApplications(appData); // Set all applications
             setAccount(userAccount);
+
+
         };
         loadApplications();
     }, []);
@@ -97,7 +99,7 @@ function ReviewerPage() {
             <ApplicantTable
                 data={applications}
                 actions={actions}
-                filters={{ showSearch: true, showSort: true, showFilter: true, showOwner:true }} // Enable all filters
+                filters={{ showSearch: true, showSort: true, showFilter: true}} // Enable all filters
             />
 
             <Footer />

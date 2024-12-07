@@ -1,9 +1,9 @@
 import React from "react";
-import { Box, Typography, Avatar } from "@mui/material";
+import { Box, Typography, Avatar, Button } from "@mui/material";
 import logo from '../../assets/logo2.png';
 import StatCard from "../StatCard/StatCard";
 
-const Header = ({ profile, stats }) => {
+const Header = ({ profile, stats, cta }) => {
   return (
     <Box>
       {/* Purple Header */}
@@ -39,6 +39,22 @@ const Header = ({ profile, stats }) => {
 
   {/* Profile Info */}
   <Box style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+  <Box style={{ textAlign: "right" }}>
+      <button
+        style={{
+          padding: "8px 10px",
+          width: "fit-content",
+          marginRight: "30px",
+          borderRadius: "5px",
+          color: "#6c63ff",
+          backgroundColor: "#fefefe",
+          fontWeight: 700,
+        }}
+        onClick={cta.onClick}
+      >
+      {cta.label}
+      </button>
+    </Box>
     <Box style={{ textAlign: "right" }}>
       <Typography variant="body1" style={{ color: "#fff", fontWeight: "bold" }}>
         {profile.name}

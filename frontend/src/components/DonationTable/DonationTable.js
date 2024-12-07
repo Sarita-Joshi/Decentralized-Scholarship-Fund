@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaSort, FaFilter } from 'react-icons/fa';
 import "./DonationTable.css";
 
-const DonationTable = () => {
+const DonationTable = (data) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [filterFund, setFilterFund] = useState("");

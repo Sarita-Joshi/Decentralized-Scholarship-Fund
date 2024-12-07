@@ -15,7 +15,7 @@ import {
   disburseFunds,
   getUserAccount,
 } from "../../contractUtils";
-import { getAllDonations, getAllApplications } from "../../dbUtils";
+import { getAllDonations, getAllApplications, getMetricsMongo } from "../../dbUtils";
 import Footer from "../../components/Footer/Footer";
 
 const FundOwnerDashboard = () => {
@@ -37,12 +37,12 @@ const FundOwnerDashboard = () => {
       total: metrics.totalApplications,
       subCategories: `${
         metrics.totalApplications - metrics.fundedApplications
-      } Active`,
+      } Active, ${metrics.fundedApplications} Funded`,
     },
     {
       title: "Funds",
       icon: <VolunteerActivismIcon style={{ color: "#7E57C2" }} />,
-      total: `${metrics.totalDonations} ETH`,
+      total: `${metrics.totalApplicationAmount} ETH`,
       subCategories: "Across Active Donations",
     },
     {
@@ -56,19 +56,6 @@ const FundOwnerDashboard = () => {
       icon: <PeopleAltIcon style={{ color: "#7E57C2" }} />,
       total: "15",
       subCategories: "Active Reviewers",
-    },
-  ];
-
-  const tasks = [
-    {
-      title: "Waiting Approval",
-      completed: metrics.totalApplications - metrics.pendingApplications,
-      total: metrics.totalApplications,
-    },
-    {
-      title: "Waiting Disbursement",
-      completed: metrics.approvedApplications,
-      total: metrics.approvedApplications + metrics.fundedApplications,
     },
   ];
 
@@ -89,33 +76,8 @@ const FundOwnerDashboard = () => {
       setApplications(appData);
       setDonations(donationData);
 
-      // Calculate metrics
-      const totalApplications = appData.length;
-      const approvedApplications = appData.filter(
-        (app) => app.status === "Approved"
-      ).length;
-      const fundedApplications = appData.filter(
-        (app) => app.status === "Funded"
-      ).length;
-      const pendingApplications = appData.filter(
-        (app) => app.status === "Pending"
-      ).length;
-      const rejectedApplications = appData.filter(
-        (app) => app.status === "Rejected"
-      ).length;
-      const totalDonations = donationData.reduce(
-        (sum, donation) => sum + donation.amount,
-        0
-      );
-
-      setMetrics({
-        totalApplications,
-        approvedApplications,
-        fundedApplications,
-        pendingApplications,
-        rejectedApplications,
-        totalDonations,
-      });
+      const metrics_ = await getMetricsMongo({fundOwner: userAccount});
+      setMetrics(metrics_);
     };
 
     fetchData();
