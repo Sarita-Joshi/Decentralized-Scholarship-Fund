@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { FaUser, FaSchool, FaMoneyBill, FaInfoCircle } from "react-icons/fa";
 import "./ApplicationFormModal.css";
 
-import illustration1 from '../assets/appl_start.gif';
-import illustration2 from '../assets/appl_brain.gif';
-import illustration3 from '../assets/appl_bank.gif';
+import illustration1 from '../../assets/application/appl_start.gif';
+import illustration2 from '../../assets/application/appl_brain.gif';
+import illustration3 from '../../assets/application/appl_bank.gif';
 
 
 const ApplicationFormModal = ({ fund, onClose, onSubmit }) => {
@@ -40,10 +40,8 @@ const ApplicationFormModal = ({ fund, onClose, onSubmit }) => {
   const handleNext = () => setCurrentStep((prev) => prev + 1);
   const handlePrev = () => setCurrentStep((prev) => prev - 1);
   
-  const handleSubmit = () => {
-    console.log("Application Submitted:", formData);
-    onSubmit(formData);
-    alert("Application Submitted Successfully!");
+  const handleSubmit = async () => {
+    await onSubmit(formData);
     onClose();
   };
 

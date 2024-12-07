@@ -14,7 +14,7 @@ const StatCard = ({ title, icon, total, subCategories, cardStyle }) => {
     >
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="subtitle2" color="textSecondary">
+          <Typography variant="subtitle2" color="textSecondary" fontWeight="550">
             {title}
           </Typography>
           <Box

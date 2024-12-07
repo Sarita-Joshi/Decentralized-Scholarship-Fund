@@ -3,9 +3,9 @@ import Select from "react-select";
 import { FaUser, FaSchool, FaMoneyBill, FaInfoCircle } from "react-icons/fa";
 import "./CreateFundModal.css";
 
-import illustration1 from "../assets/appl_start.gif";
-import illustration2 from "../assets/appl_brain.gif";
-import illustration3 from "../assets/appl_bank.gif";
+import illustration1 from "../../assets/application/appl_start.gif";
+import illustration2 from "../../assets/application/appl_brain.gif";
+import illustration3 from "../../assets/application/appl_bank.gif";
 
 const CreateFundModal = ({ isOpen, onClose, onSubmit }) => {
   const [currentStep, setCurrentStep] = useState(1);

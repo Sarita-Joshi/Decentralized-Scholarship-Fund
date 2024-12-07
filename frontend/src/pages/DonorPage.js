@@ -1,24 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import './DonorPage.css';
 import FundCard from '../components/FundCard/FundCard';
-import CreateFundModal from '../components/CreateFundModal';
+import Header from "../components/Header/Header";
+import CreateFundModal from '../components/CreateFundModal/CreateFundModal';
 import Dialog from '../components/Dialog/Dialog';
 import Footer from '../components/Footer/Footer';
 import { makeDonation, getUserAccount, CreateFundOnChain } from "../contractUtils";
-import { createDonation, createFundMongo, getAllDonations, getAllFunds, getTotalDonationsMongo, updateFundStatus } from '../dbUtils';
+import { createDonation, createFundMongo, getAllFunds } from '../dbUtils';
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import PaymentIcon from "@mui/icons-material/Payment";
+import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 
 function DonorPage() {
     const [donationAmount, setDonationAmount] = useState("");
-    const [totalDonations, setTotalDonations] = useState(0);
     const [account, setAccount] = useState(null);
-    const [donationList, setDonationList] = useState([]);
-    const [highestDonation, setHighestDonation] = useState(0);
-    const [noOfFunds, setNoOfFunds] = useState(3); // Example static value
-    const [noOfDonations, setNoOfDonations] = useState(0);
     const [selectedFund, setSelectedFund] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isCreateFundModalOpen, setIsCreateFundModalOpen] = useState(false);
     const [topFunds, setTopFunds] = useState([]);
+    const [metrics, setMetrics] = useState({
+        totalApplications: 0,
+        totalApplicationAmount:0,
+        requiredAmount:0,
+        approvedApplications: 0,
+        fundedApplications: 0,
+        pendingApplications: 0,
+        rejectedApplications: 0,
+        totalDonations: 0,
+      });
 
     useEffect(() => {
         const loadData = async () => {
@@ -28,25 +38,49 @@ function DonorPage() {
             const funds = await getAllFunds('true');
             console.log(funds);
             setTopFunds(funds)
-            
-
-            const total = await getTotalDonationsMongo();
-            setTotalDonations(total);
-
-            const donations = await getAllDonations();
-            setDonationList(donations);
-
-            // Calculate highest donation and number of donations
-            if (donations.length > 0) {
-                setHighestDonation(
-                    Math.max(...donations.map((donation) => parseFloat(donation.amount)))
-                );
-                setNoOfDonations(donations.length);
-            }
 
         };
         loadData();
     }, []);
+
+    const stats = [
+        {
+          title: "Applications",
+          icon: <AccessTimeIcon style={{ color: "#7E57C2" }} />,
+          total: metrics.totalApplications,
+          subCategories: `${
+            metrics.totalApplications - metrics.fundedApplications
+          } Active`,
+        },
+        {
+          title: "Requested Amount",
+          icon: <VolunteerActivismIcon style={{ color: "#7E57C2" }} />,
+          total: `${metrics.totalDonations} ETH`,
+          subCategories: "Across all funds",
+        },
+        {
+          title: "Your Donations",
+          icon: <PaymentIcon style={{ color: "#7E57C2" }} />,
+          total: `${metrics.totalDonations} ETH`,
+          subCategories: "Total Contributions",
+        },
+        {
+          title: "Active Funds",
+          icon: <PeopleAltIcon style={{ color: "#7E57C2" }} />,
+          total: "15",
+          subCategories: "Active Funds",
+        },
+      ];
+
+
+    const profile = {
+        name: "John Doe",
+        email: "john.doe@example.com",
+        address: "123 Blockchain Avenue, Ethereum City",
+      };
+    
+
+
 
 
     const openDialog = (fundName) => {
@@ -69,13 +103,6 @@ function DonorPage() {
                     "amount": donationAmount,
                     // "fund": selectedFund,
                 });
-
-                // Refresh total donations and donations list
-                const total = getTotalDonationsMongo();
-                setTotalDonations(total);
-
-                const donationsList = getAllDonations();
-                setDonationList(donationsList);
             }
 
             closeDialog();
@@ -85,10 +112,6 @@ function DonorPage() {
             console.error("Donation failed:", error);
             alert("Failed to process donation. Please check console for details.");
         }
-    };
-
-    const handleCreateFund = () => {
-        setIsCreateFundModalOpen(true);
     };
 
     const validateSection = (formData) => {
@@ -117,46 +140,14 @@ function DonorPage() {
                 alert("Please complete all sections before submitting.");
             }
         };
+
+    
     
 
     return (
                     <div className="donor-page">
             {/* Top Ribbon with Profile and Stats */}
-            <div className="donor-ribbon">
-                <div className="profile-section">
-                    <img
-                        src="https://via.placeholder.com/100" // Replace with actual avatar
-                        alt="Donor Avatar"
-                        className="donor-avatar"
-                    />
-                    <div className="profile-details">
-                        <h3>John Doe</h3>
-                        <p>Email: john.doe@example.com</p>
-                        <p>Address: <strong>0xABC123...XYZ</strong></p>
-                    </div>
-                    <button className="create-fund-button" onClick={handleCreateFund}>
-                    Create New Fund
-                    </button>
-                </div>
-                <div className="stats-section">
-                    <div className="stat-card">
-                        <p className='badge badge1'>No of Donations</p>
-                        <h3>{noOfDonations}</h3>
-                    </div>
-                    <div className="stat-card">
-                    <p className='badge badge2'>Total Amount</p>
-                        <h3>{totalDonations} ETH</h3>
-                    </div>
-                    <div className="stat-card">
-                    <p className='badge badge3'>No of Funds</p>
-                        <h3>{noOfFunds}</h3>
-                    </div>
-                    <div className="stat-card">
-                    <p className='badge badge4'>Highest Donation</p>
-                        <h3>{highestDonation} ETH</h3>
-                    </div>
-                </div>
-            </div>
+            <Header profile={profile} stats={stats} />
 
             {/* Top Funds Section */}
             <div className="donation-cards">

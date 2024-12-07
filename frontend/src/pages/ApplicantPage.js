@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import FundCard from "../components/FundCard/FundCard";
-import ApplicationFormModal from "../components/ApplicationFormModal"; // Import the form modal
-import StatusModal from "../components/StatusModal"; 
+import ApplicationFormModal from "../components/ApplicationFormModal/ApplicationFormModal"; // Import the form modal
+import StatusModal from "../components/StatusModal/StatusModal"; 
 import { getUserAccount, submitApplication } from '../contractUtils';
 import { createApplication, getAllFunds, getApplicationByAddress, updateAppId } from '../dbUtils';
 import "./ApplicantPage.css";
@@ -30,9 +30,10 @@ const ApplicantPage = () => {
       // Fetch user account
       const userAccount = await getUserAccount();
       setAccount(userAccount);
-
+      
       // Fetch user's application status
       const application = await getApplicationByAddress(userAccount);
+      console.log({userAccount, 'status': application.status});
       setApplicationStatus(application?.status || null);
 
       const topFunds = await getAllFunds('true');
@@ -53,7 +54,7 @@ const ApplicantPage = () => {
   };
 
   const handleCheckStatus = () => {
-    openStatusModal();
+    openStatusModal(applicationStatus);
   };
 
   const handleSubmit = async (formData) => {

@@ -50,7 +50,7 @@ function ReviewerPage() {
             await handleStatusChange(appplicant.applicantId, appplicant._id, 'Approved');
         },
         reject: async (row) => {
-            alert(`Approving application ID: ${row._id}`);
+            alert(`Rejecting application ID: ${row._id}`);
             const appplicant = applications.filter(item => item._id === row._id);
             // Here you would implement the logic to approve this application
             await handleStatusChange(appplicant.applicantId, appplicant._id, 'Approved');

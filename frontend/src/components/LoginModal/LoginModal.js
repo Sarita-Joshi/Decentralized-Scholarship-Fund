@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginModal.css';
-import { connectWallet, getUserAccount } from "../contractUtils";
+import { connectWallet, getUserAccount } from "../../contractUtils";
 import { FaInfoCircle } from 'react-icons/fa';
 
 function LoginModal({ role, closeModal }) {
