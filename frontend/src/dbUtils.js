@@ -158,9 +158,9 @@ export const createDonation = async (donationData) => {
 };
 
 // Get metrics
-export const getMetricsMongo = async (data) => {
+export const getMetricsMongo = async (data={}) => {
 
-    const { fundOwner, donorAddress } = data;
+    let { fundOwner, donorAddress } = data;
     try {
         const response = await axios.get(`${API_BASE_URL}/metrics?fundOwner=${fundOwner}&donorAddress${donorAddress}`);
         return response.data;

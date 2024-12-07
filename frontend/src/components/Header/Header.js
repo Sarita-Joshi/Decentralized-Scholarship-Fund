@@ -40,7 +40,7 @@ const Header = ({ profile, stats, cta }) => {
   {/* Profile Info */}
   <Box style={{ display: "flex", alignItems: "center", gap: "10px" }}>
   <Box style={{ textAlign: "right" }}>
-      <button
+      {cta && (<button
         style={{
           padding: "8px 10px",
           width: "fit-content",
@@ -53,7 +53,7 @@ const Header = ({ profile, stats, cta }) => {
         onClick={cta.onClick}
       >
       {cta.label}
-      </button>
+      </button>)}
     </Box>
     <Box style={{ textAlign: "right" }}>
       <Typography variant="body1" style={{ color: "#fff", fontWeight: "bold" }}>

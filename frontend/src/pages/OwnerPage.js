@@ -1,299 +1,209 @@
 import React, { useState, useEffect } from "react";
 import ApplicantTable from "../components/ApplicantTable/ApplicantTable";
-import DonorTable from "../components/DonationTable/DonationTable";
 import Footer from "../components/Footer/Footer";
 import "./OwnerPage.css";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import { approveApplication, disburseFunds, getUserAccount } from "../contractUtils";
-import { updateAppStatus, getAllApplications } from "../dbUtils";
-// import {
-//     Chart as ChartJS,
-//     ArcElement,
-//     Tooltip,
-//     Legend,
-//     CategoryScale,
-//     LinearScale,
-//     PointElement,
-//     LineElement,
-// } from "chart.js";
-// import { Doughnut } from "react-chartjs-2";
-
-// // Register required elements
-// ChartJS.register(
-//     ArcElement,
-//     Tooltip,
-//     Legend,
-//     CategoryScale,
-//     LinearScale,
-//     PointElement,
-//     LineElement
-// );
+import {
+  getUserAccount,
+  approveApplication,
+  disburseFunds,
+} from "../contractUtils";
+import {
+  getAllApplications,
+  getAllFunds,
+  getMetricsMongo,
+} from "../dbUtils";
+import Header from "../components/Header/Header";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import PaymentIcon from "@mui/icons-material/Payment";
+import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 
 function OwnerPage() {
   const [applications, setApplications] = useState([]);
-  const [donations, setDonations] = useState([]);
+  const [filteredApplications, setFilteredApplications] = useState([]);
+  const [topFunds, setTopFunds] = useState([]);
+  const [selectedFundIds, setSelectedFundIds] = useState([]);
   const [account, setAccount] = useState(null);
-
-  const [highestDonation, setHighestDonation] = useState(0);
-  const [noOfFunds, setNoOfFunds] = useState(3); // Example static value
-  const [noOfDonations, setNoOfDonations] = useState(0);
   const [metrics, setMetrics] = useState({
-    totalApplicants: 0,
+    totalApplications: 0,
+    totalApplicationAmount: 0,
+    requiredAmount: 0,
     approvedApplications: 0,
+    fundedApplications: 0,
     pendingApplications: 0,
     rejectedApplications: 0,
     totalDonations: 0,
-    disbursedFunds: 0,
-    remainingFunds: 0,
   });
 
   useEffect(() => {
-    // Fetch applications and donations data (mocked here for now)
     const fetchData = async () => {
       const userAccount = await getUserAccount();
+      setAccount(userAccount);
+
       const appData = await getAllApplications();
-      
-      const donData = [
-        {
-          id: 1,
-          donor: "0x1234",
-          fund: "Education Fund",
-          amount: 100,
-          date: "2024-11-01",
-        },
-        {
-          id: 2,
-          donor: "0x2345",
-          fund: "Health Fund",
-          amount: 200,
-          date: "2024-11-05",
-        },
-        {
-          id: 3,
-          donor: "0x3456",
-          fund: "Community Fund",
-          amount: 150,
-          date: "2024-11-10",
-        },
-      ];
       setApplications(appData);
-      setDonations(donData);
+      setFilteredApplications(appData);
 
-      // Calculate metrics
-      const totalApplicants = appData.length;
-      const approvedApplications = appData.filter(
-        (app) => app.status === "Approved"
-      ).length;
-      const pendingApplications = appData.filter(
-        (app) => app.status === "Pending"
-      ).length;
-      const rejectedApplications = appData.filter(
-        (app) => app.status === "Rejected"
-      ).length;
+      const funds = await getAllFunds("true");
+      setTopFunds(funds);
 
-      const totalDonations = donData.reduce(
-        (sum, donation) => sum + donation.amount,
-        0
-      );
-      const disbursedFunds = appData
-        .filter((app) => app.status === "Approved")
-        .reduce((sum, app) => sum + app.amount, 0);
-      const remainingFunds = totalDonations - disbursedFunds;
+      const metrics_ = await getMetricsMongo({ donorAddress: userAccount });
+      setMetrics(metrics_);
 
-      setMetrics({
-        totalApplicants,
-        approvedApplications,
-        pendingApplications,
-        rejectedApplications,
-        totalDonations,
-        disbursedFunds,
-        remainingFunds,
-      });
+      console.log(["hiiii", funds, appData[0]]);
     };
 
     fetchData();
   }, []);
 
-  // // Donut chart data for applications
-  // const applicationChartData = {
-  //     labels: ["Approved", "Pending", "Rejected"],
-  //     datasets: [
-  //         {
-  //             data: [
-  //                 metrics.approvedApplications,
-  //                 metrics.pendingApplications,
-  //                 metrics.rejectedApplications,
-  //             ],
-  //             backgroundColor: ["#4caf50", "#ff9800", "#f44336"], // Colors for approved, pending, rejected
-  //             hoverOffset: 4,
-  //         },
-  //     ],
-  // };
-
-  // // Donut chart data for funds
-  // const fundChartData = {
-  //     labels: ["Disbursed Funds", "Remaining Funds"],
-  //     datasets: [
-  //         {
-  //             data: [metrics.disbursedFunds, metrics.remainingFunds],
-  //             backgroundColor: ["#6a1b9a", "#8e24aa"], // Colors for disbursed vs remaining
-  //             hoverOffset: 4,
-  //         },
-  //     ],
-  // };
-  // Handle application status updates
-  const handleStatusChange = async (id, mongoHash, newStatus) => {
-    console.log({ id, mongoHash, newStatus });
-    const result = await approveApplication(id, newStatus);
-    alert(result.message);
-
-    if (result.success) {
-      await updateAppStatus(mongoHash, newStatus);
-      setApplications((prevApps) =>
-        prevApps.map((app) =>
-          app._id === mongoHash ? { ...app, status: newStatus } : app
-        )
+  // Filter applications when selectedFundIds changes
+  useEffect(() => {
+    if (selectedFundIds.length > 0) {
+      const filtered = applications.filter((app) =>
+        selectedFundIds.includes(app.fundId)
       );
+      setFilteredApplications(filtered);
+    } else {
+      setFilteredApplications(applications); // Show all if no fund is selected
     }
+  }, [selectedFundIds, applications]);
+
+  const toggleFundSelection = (fundId) => {
+    setSelectedFundIds((prev) =>
+      prev.includes(fundId)
+        ? prev.filter((id) => id !== fundId)
+        : [...prev, fundId]
+    );
   };
 
-  const handleDisbursement = async (id, mongoHash) => {
-    console.log({ id, mongoHash });
-    const result = await disburseFunds(id);
-    alert(result.message);
-
-    if (result.success) {
-      await updateAppStatus(mongoHash, 'Funded');
-      setApplications((prevApps) =>
-        prevApps.map((app) =>
-          app._id === mongoHash ? { ...app, status: 'Funded' } : app
-        )
-      );
-    }
-  };
-
-  // Actions for approve/reject buttons
   const actions = {
     approve: async (row) => {
-      alert(`Approving application ID: ${row._id}`);
-      const appplicant = applications.filter((item) => item._id === row._id)[0];
-      console.log(appplicant);
-      // Here you would implement the logic to approve this application
-      await handleStatusChange(
-        appplicant.applicantId,
-        appplicant._id,
-        "Approved"
+      const app = applications.find((app) => app._id === row._id);
+      await approveApplication(app.applicantId, "Approved");
+      setFilteredApplications((prevApps) =>
+        prevApps.map((app) =>
+          app._id === row._id ? { ...app, status: "Approved" } : app
+        )
       );
     },
-    reject:  async (row) => {
-      alert(`Rejecting application ID: ${row._id}`);
-      const appplicant = applications.filter((item) => item._id === row._id)[0];
-      console.log(appplicant);
-      // Here you would implement the logic to approve this application
-      await handleStatusChange(
-        appplicant.applicantId,
-        appplicant._id,
-        "Rejected"
+    reject: async (row) => {
+      const app = applications.find((app) => app._id === row._id);
+      await approveApplication(app.applicantId, "Rejected");
+      setFilteredApplications((prevApps) =>
+        prevApps.map((app) =>
+          app._id === row._id ? { ...app, status: "Rejected" } : app
+        )
       );
     },
     disburse: async (row) => {
-      alert(`Sending funds to application ID: ${row._id}`);
-      const appplicant = applications.filter((item) => item._id === row._id)[0];
-      console.log(appplicant);
-      // Here you would implement the logic to approve this application
-      await handleDisbursement(
-        appplicant.applicantId,
-        appplicant._id
+      const app = applications.find((app) => app._id === row._id);
+      await disburseFunds(app.applicantId);
+      setFilteredApplications((prevApps) =>
+        prevApps.map((app) =>
+          app._id === row._id ? { ...app, status: "Funded" } : app
+        )
       );
-    }
+    },
+  };
+
+  const getRandomColor = (index) => {
+    const colors = [
+      "#FF8A80", // Light Red
+      "#FF80AB", // Pink
+      "#B388FF", // Light Purple
+      "#8C9EFF", // Light Blue
+      "#80D8FF", // Aqua
+      "#A7FFEB", // Teal
+      "#CCFF90", // Light Green
+      "#FFFF8D", // Yellow
+    ];
+    return colors[index % colors.length]; // Cycle through the color palette
+  };
+
+  const stats = [
+    {
+      title: "Applications",
+      icon: <AccessTimeIcon style={{ color: "#7E57C2" }} />,
+      total: metrics.totalApplications,
+      subCategories: `${
+        metrics.totalApplications - metrics.fundedApplications
+      } Active, ${metrics.fundedApplications} Funded`,
+    },
+    {
+      title: "Requested Amount",
+      icon: <VolunteerActivismIcon style={{ color: "#7E57C2" }} />,
+      total: `${metrics.totalApplicationAmount} ETH`,
+      subCategories: "Across all funds",
+    },
+    {
+      title: "Your Donations",
+      icon: <PaymentIcon style={{ color: "#7E57C2" }} />,
+      total: `${metrics.totalDonations} ETH`,
+      subCategories: "Total Contributions",
+    },
+    {
+      title: "Active Funds",
+      icon: <PeopleAltIcon style={{ color: "#7E57C2" }} />,
+      total: topFunds.length,
+      subCategories: "Active Funds",
+    },
+  ];
+
+  const profile = {
+    name: "John Doe",
+    email: "john.doe@example.com",
+    address: "123 Blockchain Avenue, Ethereum City",
   };
 
   return (
     <div className="owner-page">
-      <div className="donor-ribbon">
+      {/* Top Ribbon with Profile and Stats */}
+      <Header profile={profile} stats={stats} />
 
-        <div className="stats-section">
-          <div className="stat-card">
-            <p className="badge badge1">Total Applications</p>
-            <h3>{noOfDonations}</h3>
-          </div>
-          <div className="stat-card">
-            <p className="badge badge2">Approved Applications</p>
-            <h3>{noOfDonations} ETH</h3>
-          </div>
-          <div className="stat-card">
-            <p className="badge badge3">Rejected Applications</p>
-            <h3>{noOfFunds}</h3>
-          </div>
-          <div className="stat-card">
-            <p className="badge badge4">Pending Applications</p>
-            <h3>{highestDonation} ETH</h3>
-          </div>
-          <div className="stat-card">
-            <p className="badge badge4">Available Funds</p>
-            <h3>{highestDonation} ETH</h3>
-          </div>
-          <div className="stat-card">
-            <p className="badge badge4">Distrubursed Funds</p>
-            <h3>{highestDonation} ETH</h3>
-          </div>
+      {/* Horizontal Fund Slider */}
+
+      <div className="compact-slider-section">
+        <h2 className="compact-slider-title">Filter by Funds</h2>
+        <div className="compact-slider-container">
+          {topFunds.map((fund, index) => (
+            <div
+              key={fund.id}
+              className={`compact-fund-card ${
+                selectedFundIds.includes(fund.id) ? "selected" : ""
+              }`}
+              onClick={() => toggleFundSelection(fund.id)}
+            >
+              <div className="compact-fund-left">
+                <div 
+                className="compact-fund-circle"
+                style={{
+                  backgroundColor: getRandomColor(index), // Set random color dynamically
+                }}>
+                  {fund.title.charAt(0).toUpperCase()}
+                </div>
+              </div>
+              <div className="compact-fund-right">
+                <h3 className="compact-fund-title">{fund.title}</h3>
+                <p className="compact-fund-subtitle">{fund.subtitle}</p>
+              </div>
+            </div>
+          ))}
         </div>
-        {/* Progress Bars Section */}
-  <div className="progress-bars">
-    <div className="progress-item">
-      <p><span className="progress-heading">Pending Applications</span> ({metrics.pendingApplications} out of {metrics.totalApplicants})</p>
-      
-      <div className="progress-bar">
-        <div
-          className="progress-bar-filled"
-          style={{
-            width: `${
-              (metrics.pendingApplications / metrics.totalApplicants) * 100
-            }%`,
-          }}
-        ></div>
-      </div>
-    </div>
-
-    <div className="progress-item">
-      <p><span className="progress-heading">Pending Disbursement</span>({metrics.disbursementPending} out of {metrics.totalApplicants})</p>
-      
-      <div className="progress-bar">
-        <div
-          className="progress-bar-filled"
-          style={{
-            width: `${
-              (metrics.disbursementPending / metrics.totalApplicants) * 100
-            }%`,
-          }}
-        ></div>
-      </div>
-      
-    </div>
-  </div>
-
       </div>
 
       {/* Applicant Table */}
       <div className="table-container">
         <h3>Applicants</h3>
         <ApplicantTable
-          data={applications}
+          data={filteredApplications}
           actions={actions}
           filters={{
             showSearch: true,
             showSort: true,
             showFilter: true,
-            showActions: false,
-            showOwner: true,
+            showActions: true,
           }}
         />
-      </div>
-
-      {/* Donations Table */}
-      <div className="table-container">
-        <h3>Donations</h3>
-        <DonorTable donations={donations} />
       </div>
 
       <Footer />
