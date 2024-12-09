@@ -10,9 +10,6 @@ Sarita Joshi\
 saritajoshi@csu.fullerton.edu\
 Sarita-Joshi (@git)
 
-Feel free to reach out for support or feedback!
-
-4o
 
 Features
 --------
