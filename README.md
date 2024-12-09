@@ -7,7 +7,7 @@ This project is **implemented entirely from scratch** and is an original creatio
 Team-
 Sarita Joshi\
 saritajoshi@csu.fullerton.edu\
-CWID - 884441866
+Sarita-Joshi (@git)
 
 
 ### 1\. Smart Contract Design
