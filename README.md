@@ -1,70 +1,161 @@
-# Getting Started with Create React App
+Scholarship Fund DApp
+====================
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A decentralized application for managing scholarship funds using blockchain. This project facilitates secure and transparent processes for applicants, donors, and reviewers.
 
-## Available Scripts
 
-In the project directory, you can run:
+Team
+-------
+Sarita Joshi\
+saritajoshi@csu.fullerton.edu\
+Sarita-Joshi (@git)
 
-### `npm start`
+Feel free to reach out for support or feedback!
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+4o
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Features
+--------
 
-### `npm test`
+-   **Applicants**:
+    -   Apply for scholarships.
+    -   Check the status of applications.
+-   **Donors**:
+    -   Create and contribute to funds.
+    -   Track contributions.
+-   **Reviewers**:
+    -   Approve or reject applications.
+    -   Ensure fair and transparent decision-making.
+    **Admin**:
+    -   Admin module to monitor and disubrse funds.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+* * * * *
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Project Setup
+-------------
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Prerequisites
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Ensure the following tools are installed on your system:
 
-### `npm run eject`
+-   **Node.js** (version 14 or higher): Install from the official Node.js website.
+-   **Truffle**: Install globally using `npm install -g truffle`.
+-   **MongoDB**: Install MongoDB locally or use a cloud database such as MongoDB Atlas.
+-   **Ganache**: Download and install Ganache for local blockchain development.
+-   **MetaMask**: Add MetaMask as a browser extension and configure it for local development.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* * * * *
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Step 1: Clone the Repository
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Clone the project repository and navigate to the project directory.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```
+git clone https://github.com/Sarita-Joshi/Decentralized-Scholarship-Fund.git
+```
 
-## Learn More
+* * * * *
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Step 2: Backend Setup
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1.  Navigate to the backend directory `cd backend`.
+2.  Install the backend dependencies using `npm install`.
+3.  Create a .env file in the backend directory with the following content:
+    -   Mongo_URI - connection string of mongodb instance.
+    -   PORT - port number.
+4.  Optionally, run seedData.js to populate the database or blockchain with initial test data.
+5.  Start the backend server by running `node server.js`.
 
-### Code Splitting
+![alt text](docs/image-1.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+#### MongoDB Setup
 
-### Analyzing the Bundle Size
+1.  **Local MongoDB**:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+    -   Install MongoDB from the [official website](https://www.mongodb.com/try/download/community).
+    -   Start the MongoDB server on your local machine:
+        -   Default port: 27017.
+    -   Use the connection string: `mongodb://localhost:27017/scholarshipFund`.
+2.  **MongoDB Atlas** (Cloud Database):
 
-### Making a Progressive Web App
+    -   Sign up at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+    -   Create a new cluster and database.
+    -   Obtain the connection string and add it to your `.env` file under `MONGODB_URI`.
+    -   Example connection string: `mongodb+srv://<username>:<password>@cluster0.mongodb.net/scholarshipFund?retryWrites=true&w=majority`.
+3.  Verify that the backend connects to MongoDB successfully by checking the logs in the terminal when running `server.js`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+![alt text](docs/image.png)
 
-### Advanced Configuration
+* * * * *
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Step 3: Smart Contract Setup
 
-### Deployment
+1.  Compile the smart contracts by running `truffle compile`.
+2.  Deploy the smart contracts by running `truffle migrate --network development`.
+3.  Verify that the contract is deployed successfully. Copy the deployed contract address to use in the .env files for both the frontend and backend.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+* * * * *
 
-### `npm run build` fails to minify
+### Step 4: Frontend Setup
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1.  Navigate to the frontend directory `cd frontend`.
+2.  Install the frontend dependencies using `npm install`.
+3.  Copy the json file in `build/contract/ScholarshipFund.json` to contracts folder in `frontend/src/contracts/ScholarshipFund.json`. This is essential to get latest contract address, ABI.
+4.  Start the React app using `npm start`. The app will open in your default browser.
+
+* * * * *
+
+### Step 5: Testing
+
+#### Unit Testing with Truffle
+
+1.  Test file is in test/ScholarshipFund.test.js.
+2.  Run the tests using `truffle test`.
+
+![alt text](docs/image-2.png)
+
+#### App Journey
+
+1.  Open the application in your browser.
+2.  Connect MetaMask to the local blockchain (Ganache).
+3.  Test features such as creating funds, applying for scholarships, donating funds, and reviewing applications.
+
+![alt text](docs/image-3.png)
+
+![alt text](docs/image-4.png)
+
+![alt text](docs/image-5.png)
+
+-------------------
+Directory Structure
+
+scholarship-fund-dapp/
+
+-   backend/: Backend server
+    -   .env: Environment variables
+    -   package.json: Backend dependencies
+    -   server.js: Backend server file
+    -   seedData.js: Script to seed initial data
+-   build/contracts/: Compiled contracts
+-   contracts/: Solidity smart contracts
+-   frontend/: React frontend
+    -   .env: Frontend environment variables
+    -   public/: Static files
+    -   src/: React components
+    -   package.json: Frontend dependencies
+-   migrations/: Deployment scripts
+-   test/: Smart contract tests
+-   truffle-config.js: Truffle configuration
+-   README.md: Project documentation
+
+----------------
+Technology Stack
+
+
+-   **Frontend**: React, Ethers.js
+-   **Backend**: Node.js, Solidity
+-   **Blockchain**: Ethereum, Truffle, Ganache
+-   **Wallet**: MetaMask
+
+
