@@ -3,8 +3,35 @@
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    margin: 0 10% 0 10%;
 }
+
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Ensure wrapping on smaller screens */
+    gap: 10px; /* Space between controls */
+    margin-bottom: 20px;
+}
+
+.controls input {
+    flex: 1; /* Take more space for search */
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.controls select {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.9em;
+    min-width: 120px; /* Ensure dropdowns stay small */
+    flex: none;
+}
+
 
 .controls {
     display: flex;

@@ -125,3 +125,101 @@
     font-size: 1.2rem;
     color: #333;
 }
+
+.compact-slider-section {
+  margin: 20px 0;
+}
+
+.compact-slider-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333; /* Match the theme color */
+  margin-bottom: 10px;
+  text-align: left;
+  margin-left: 20px;
+}
+
+.compact-slider-container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 20px;
+  background-color: #7e57c20c; /* Light purple background */
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+
+.compact-slider-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.compact-slider-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.compact-slider-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.compact-fund-card {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #fefefe; /* Card background */
+  border: 1px solid #fefefe;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  width: 200px;
+}
+
+.compact-fund-card:hover {
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.compact-fund-card.selected {
+  border-color: #7e57c2;
+  background-color: #e1dce9; /* Highlighted background for selected cards */
+}
+
+.compact-fund-left {
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+.compact-fund-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #7e57c2; /* Purple background for circle */
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.compact-fund-right {
+  flex-grow: 1;
+}
+
+.compact-fund-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.compact-fund-subtitle {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 0;
+  margin-top: 2px;
+}

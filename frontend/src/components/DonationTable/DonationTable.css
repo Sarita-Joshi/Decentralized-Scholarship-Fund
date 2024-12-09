@@ -1,22 +1,145 @@
+.donation-table {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+/* Controls Layout */
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* Search Input */
+.controls input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    outline: none;
+    transition: box-shadow 0.3s;
+}
+
+.controls input:focus {
+    box-shadow: 0 0 5px rgba(123, 108, 251, 0.4);
+    border-color: #7b6cfb;
+}
+
+/* Dropdown with Icons */
+.dropdown-with-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; /* Icon-only width */
+    height: 40px; /* Square shape */
+    border: 1px solid #7b6cfb;
+    border-radius: 5px;
+    background-color: rgba(123, 108, 251, 0.1);
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+/* Interactive Select */
+.dropdown-with-icon select {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0; /* Keeps it invisible */
+    cursor: pointer;
+    z-index: 2; /* Ensures it's above the icon */
+}
+
+.dropdown-with-icon .icon {
+    font-size: 1.2em;
+    color: #6c63ff;
+    z-index: 1; /* Keeps the icon above the hidden select */
+}
+
+.dropdown-with-icon:hover {
+    background-color: #7b6cfb;
+    box-shadow: 0 0 5px rgba(123, 108, 251, 0.3);
+}
+
+.dropdown-with-icon:hover .icon {
+    color: #fff; /* White icon on hover */
+}
+
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1em;
+}
+
+thead th, tbody td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+thead th {
+    color: #6c63ff;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.95em;
+}
+
+/* Fund Tags */
 .fund-tag {
     padding: 5px 10px;
     border-radius: 15px;
     font-size: 0.9em;
     text-transform: capitalize;
     display: inline-block;
-    color: white; /* Default text color for better contrast */
     font-weight: bold;
+    color: white;
 }
 
-.action-btn {
-    padding: 5px 10px;
-    background-color: #6c63ff;
-    color: white;
+.controls .icon {
+    font-size: 1.2em;
+    color: #6c63ff;
+}
+
+
+/* Pagination Controls */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination-btn {
+    padding: 8px 12px;
+    background-color: #d8d8df;
+    color: #333;
     border: none;
     border-radius: 5px;
+    font-size: 1rem;
     cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0 10px;
 }
 
-.action-btn:hover {
-    background-color: #5754d8;
+.pagination-btn:hover {
+    background-color: #6c63ff;
+    color: white;
+}
+
+.pagination-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 1rem;
+    color: #555;
 }

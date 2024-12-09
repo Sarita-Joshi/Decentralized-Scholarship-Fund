@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import LoginModal from '../components/LoginModal';
+import LoginModal from '../components/LoginModal/LoginModal';
 import './Home.css';
 import FeatureCard from '../components/FeatureCard/FeatureCard';
-import transparentIcon from '../assets/transparency.png';
-import anonymousIcon from '../assets/anonymous.png';
-import smartContractsIcon from '../assets/ethereum.png';
+import transparentIcon from '../assets/home/transparency.png';
+import anonymousIcon from '../assets/home/anonymous.png';
+import smartContractsIcon from '../assets/home/ethereum.png';
 import { FcDisclaimer } from 'react-icons/fc';
 import Footer from '../components/Footer/Footer';
 import logo from '../assets/logo2.png';
-import homegif from '../assets/Research paper.gif';
-import approvergif from '../assets/approver.gif';
-import donorgif from '../assets/donor.gif';
-import applgif from '../assets/appl.gif';
+import homegif from '../assets/home/Research paper.gif';
+import approvergif from '../assets/home/approver.gif';
+import donorgif from '../assets/home/donor.gif';
+import applgif from '../assets/home/appl.gif';
 
 function Home() {
     const [showLogin, setShowLogin] = useState(false);

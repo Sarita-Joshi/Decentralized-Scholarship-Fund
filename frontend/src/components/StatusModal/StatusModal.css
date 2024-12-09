@@ -1,0 +1,53 @@
+.status-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.status-modal {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    width: 500px;
+    height: 300px;
+    max-width: 90%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    position: relative;
+}
+
+.status-modal img {
+    max-width: 100%;
+    max-height: 80%;
+    margin: 20px 0;
+}
+
+.status-modal h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.quote {
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 10px;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #333;
+    width: fit-content;
+}

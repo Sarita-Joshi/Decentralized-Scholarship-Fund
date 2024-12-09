@@ -4,15 +4,12 @@ import Footer from '../components/Footer/Footer'; // Import ApplicantTable
 
 import './ReviewerPage.css';
 import { approveApplication, getUserAccount } from "../contractUtils";
-import { updateAppStatus, getAllApplications } from '../dbUtils';
+import { updateAppStatus, getAllApplications, getMetricsMongo } from '../dbUtils';
 
 function ReviewerPage() {
     const [applications, setApplications] = useState([]);
     const [account, setAccount] = useState(null);
-    const [highestDonation, setHighestDonation] = useState(0);
-    const [noOfFunds, setNoOfFunds] = useState(3); // Example static value
-    const [noOfDonations, setNoOfDonations] = useState(0);
-
+    const [metrics, setMetrics] = useState(0);
     // Fetch applications on load
     useEffect(() => {
         const loadApplications = async () => {
@@ -20,14 +17,19 @@ function ReviewerPage() {
             const appData = await getAllApplications();
             setApplications(appData); // Set all applications
             setAccount(userAccount);
+            
+            const metrics_ = await getMetricsMongo();
+            setMetrics(metrics_);
+
         };
         loadApplications();
     }, []);
 
     // Handle application status updates
     const handleStatusChange = async (id, mongoHash, newStatus) => {
-        console.log({id, mongoHash, newStatus})
-        const result = await approveApplication(id, newStatus);
+        let status = newStatus==='Approved' ? true : false;
+        console.log({id, mongoHash, newStatus, status})
+        const result = await approveApplication(id, status);
         alert(result.message);
 
         if (result.success) {
@@ -50,7 +52,7 @@ function ReviewerPage() {
             await handleStatusChange(appplicant.applicantId, appplicant._id, 'Approved');
         },
         reject: async (row) => {
-            alert(`Approving application ID: ${row._id}`);
+            alert(`Rejecting application ID: ${row._id}`);
             const appplicant = applications.filter(item => item._id === row._id);
             // Here you would implement the logic to approve this application
             await handleStatusChange(appplicant.applicantId, appplicant._id, 'Approved');
@@ -76,19 +78,19 @@ function ReviewerPage() {
                 <div className="stats-section">
                     <div className="stat-card">
                         <p className='badge badge1'>Total Approved</p>
-                        <h3>{noOfDonations}</h3>
+                        <h3>{metrics.approvedApplications+metrics.fundedApplications}</h3>
                     </div>
                     <div className="stat-card">
-                    <p className='badge badge2'>Approved Amount</p>
-                        <h3>{noOfDonations} ETH</h3>
+                    <p className='badge badge2'>Application Amount</p>
+                        <h3>{metrics.totalApplicationAmount} ETH</h3>
                     </div>
                     <div className="stat-card">
                     <p className='badge badge3'>Rejected Applications</p>
-                        <h3>{noOfFunds}</h3>
+                        <h3>{metrics.rejectedApplications}</h3>
                     </div>
                     <div className="stat-card">
                     <p className='badge badge4'>Pending Applications</p>
-                        <h3>{highestDonation} ETH</h3>
+                        <h3>{metrics.pendingApplications}</h3>
                     </div>
                 </div>
                 
@@ -97,7 +99,7 @@ function ReviewerPage() {
             <ApplicantTable
                 data={applications}
                 actions={actions}
-                filters={{ showSearch: true, showSort: true, showFilter: true, showOwner:true }} // Enable all filters
+                filters={{ showSearch: true, showSort: true, showFilter: true}} // Enable all filters
             />
 
             <Footer />

@@ -44,7 +44,7 @@ const ProfileModal = ({ profile, onClose }) => {
                     {/* Right Section */}
                     <div className="profile-right">
                         <div className="profile-details">
-                            <p><strong>Requested Amount:</strong> ${profile.requestedAmount}</p>
+                            <p><strong>Requested Amount:</strong> {profile.requestedAmount} ETH</p>
                             <p><strong>Status:</strong> {profile.status}</p>
                             <p><strong>Application Date:</strong> {formatDate(profile.createdAt)}</p>
                             <p><strong>Last Updated:</strong> {formatDate(profile.updatedAt)}</p>

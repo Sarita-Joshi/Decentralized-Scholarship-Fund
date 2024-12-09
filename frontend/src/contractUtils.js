@@ -38,12 +38,28 @@ export const connectWallet = async () => {
     alert("Please install MetaMask.");
     return null;
   }
-
-  const accounts = await window.ethereum.request({
-    method: "eth_requestAccounts",
-  });
-  account = accounts[0];
-  return accounts[0];
+  let message = null;
+  try {
+    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+    
+    if (accounts.length > 0) {
+      message = `Already connected: ${accounts}`;
+      account = accounts[0];
+      return (account, message);
+    } else {
+      const newAccounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      console.log("Connected:", newAccounts);
+      account = newAccounts[0];
+      return (account, message);
+    }
+  } catch (error) {
+    if (error.code === -32002) {
+      message = "MetaMask request is already in progress. Please complete the request.";
+    } else {
+      message =  `MetaMask connection failed: ${error.message}`;
+    }
+    return (null, message);
+  }
 };
 
 export const getUserAccount = async () => {
@@ -54,34 +70,39 @@ export const getUserAccount = async () => {
 };
 
 // Check if the connected account is the contract owner
-export const checkIfOwner = async (account) => {
+export const checkIfOwner = async (account_) => {
   try {
     const contract = await getContractInstance();
     const ownerAddress = await contract.getOwner();
-    return account.toLowerCase() === ownerAddress.toLowerCase();
+    console.log([ownerAddress, account_])
+    return account_.toLowerCase() === ownerAddress.toLowerCase();
   } catch (error) {
     console.error("Error checking ownership:", error);
     return false;
   }
 };
 
-// Fetch total donations from the contract
-export const getTotalDonations = async () => {
+// Fetch total donations for a specific fund
+export const getTotalDonations = async (fundId = 1) => {
   try {
     const contract = await getContractInstance();
-    const totalDonations = await contract.getTotalDonations();
-    return ethers.utils.formatEther(totalDonations.toString());
+    const fund = await contract.getFund(fundId);
+    return ethers.utils.formatEther(fund.balance.toString());
   } catch (error) {
     console.error("Error fetching total donations:", error);
     return null;
   }
 };
 
-// Fetch applications (replace with actual data fetching logic as needed)
-export const fetchApplications = async () => {
+// Fetch applications for a specific fund
+export const fetchApplications = async (fundId = 1) => {
   try {
     const contract = await getContractInstance();
-    const applications = await contract.getApplications(); // Adjust based on your contract
+    const applications = [];
+    for (let i = 1; i <= fundId; i++) {
+      const app = await contract.getApplication(i);
+      applications.push(app);
+    }
     return applications;
   } catch (error) {
     console.error("Error fetching applications:", error);
@@ -89,11 +110,11 @@ export const fetchApplications = async () => {
   }
 };
 
-// Make a donation through the contract
-export const makeDonation = async (amount) => {
+// Make a donation to a specific fund
+export const makeDonation = async (amount, fundId = 1) => {
   try {
     const contract = await getContractInstance();
-    const tx = await contract.donate({
+    const tx = await contract.donateToFund(fundId, {
       value: ethers.utils.parseEther(amount),
     });
     await tx.wait();
@@ -105,44 +126,112 @@ export const makeDonation = async (amount) => {
 };
 
 // Submit a new application to the contract
-export const submitApplication = async (applicationAmount, metadataHash) => {
+export const submitApplication = async (
+  applicationAmount,
+  metadataHash,
+  fundId = 1
+) => {
   try {
     const contract = await getContractInstance();
     const tx = await contract.submitApplication(
       ethers.utils.parseEther(applicationAmount),
-      metadataHash // This could be a hash from MongoDB or IPFS
+      metadataHash,
+      fundId
     );
-    // await tx.wait();
     const receipt = await tx.wait();
-    // Extract the application ID from the event
     const applicationId = receipt.events[0].args[0];
-    console.log("Application ID:", applicationId.toString());
-    
-    return { success: true, message: "Application submitted!", id: applicationId.toString() };
+    return {
+      success: true,
+      message: "Application submitted!",
+      id: applicationId.toString(),
+    };
   } catch (error) {
     console.error("Application submission failed:", error);
-    return { success: false, message: "Failed to submit application.", id:null };
+    return {
+      success: false,
+      message: "Failed to submit application.",
+      id: null,
+    };
   }
 };
 
-// Approve an application (only for contract owner)
-export const approveApplication = async (_id, newStatus) => {
+// Create a new fund
+export const CreateFundOnChain = async (fundData = {}) => {
   try {
+    const {
+      fundName = "Default Fund",
+      minimumApprovals = 1,
+      reviewers = [],
+      initialBalance = "0.01",
+    } = fundData;
+
     const contract = await getContractInstance();
-    const tx = await contract.updateApplicationStatus(_id, newStatus);
-    await tx.wait();
-    return { success: true, message: `Application ${_id} ${newStatus}.` };
+    const fundAmount = ethers.utils.parseEther(initialBalance.toString());
+    console.log(
+      fundName,
+      minimumApprovals,
+      reviewers,
+      initialBalance,
+      fundAmount
+    );
+    const tx = await contract.createFund(
+      fundName,
+      minimumApprovals,
+      reviewers,
+      {
+        value: fundAmount,
+      }
+    );
+    const receipt = await tx.wait();
+    const fundId = receipt.events[0].args[0];
+    return { success: true, message: "Fund created!", id: fundId.toString() };
   } catch (error) {
-    console.error("Application update failed:", error);
-    return { success: false, message: "Failed to update application." };
+    console.error("Fund creation failed:", error);
+    return { success: false, message: "Failed to create fund.", id: null };
   }
 };
 
-// Disburse funds to an approved applicant (only for contract owner)
-export const disburseFunds = async (applicationId) => {
+// Approve or reject an application
+export const approveApplication = async (applicationId, approve) => {
+  try {
+    // Get the contract instance
+    const contract = await getContractInstance();
+
+    const signer = await contract.signer.getAddress();
+    if (!signer) {
+      throw new Error("No wallet connected. Please connect MetaMask.");
+    }
+
+    // Call the reviewApplication function
+    const tx = await contract.reviewApplication(applicationId, approve);
+    // Wait for the transaction to be confirmed
+    const receipt = await tx.wait();
+    console.log("Transaction:", receipt);
+
+    const status = approve ? "Approved" : "Rejected";
+    return { success: true, message: `Application ${status}.` };
+  } catch (error) {
+    // Log and return the error
+    console.error("Application update failed:", error);
+
+    // Return an appropriate error message based on the type of error
+    if (error.message.includes("Application does not exist")) {
+      return { success: false, message: "The application does not exist." };
+    } else if (error.message.includes("not authorized to review this application")) {
+      return { success: false, message: "You are not authorized to review this application." };
+    } else if (error.message.includes("Already reviewed this application")) {
+      return { success: false, message: "You have already reviewed this application." };
+    } else {
+      return { success: false, message: "Failed to update application." };
+    }
+  }
+};
+
+// Disburse funds to an approved applicant
+export const disburseFunds = async (applicationId = 1) => {
   try {
     const contract = await getContractInstance();
-    const tx = await contract.disburseFunds(parseInt(applicationId, 10));
+    const tx = await contract.disburseFunds(applicationId);
     await tx.wait();
     return {
       success: true,

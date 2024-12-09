@@ -1,0 +1,230 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 600px;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .content-wrapper {
+    display: flex;
+    width: 80%; /* Adjust the width as needed */
+    max-width: 1000px; /* Limit max width for large screens */
+    height: 500px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .illustration-container {
+    width: 40%;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+    color: #333;
+    border-radius: 8px 0 0 8px; /* Rounded corners on left side */
+  }
+  
+  .illustration {
+    width: 80%;
+    margin-bottom: 20px;
+  }
+  
+  .form-container {
+    width: 60%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 0 8px 8px 0; /* Rounded corners on right side */
+    background-color: #fbfbfd;
+  }
+  
+  .step-indicator {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .step-indicator span {
+    width: 30px;
+    height: 30px;
+    background-color: #ddd;
+    color: #6c63ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+  
+  .step-indicator .active {
+    background-color: #6c63ff;
+    color: white;
+  }
+  
+  .section-icon-na {
+    visibility: hidden;
+  }
+  
+  .form-section {
+    margin-bottom: 20px;
+    height: 255px;
+  }
+  
+  .form-section h4 {
+    color: #6c63ff;
+    margin-bottom: 10px;
+  }
+  
+  .form-section label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .form-section input,
+  .form-section textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .money-textarea {
+      height: 120px;
+      resize: vertical;
+    }
+  
+  .statement-textarea {
+      height: 180px;
+      resize: vertical;
+    }
+  
+  
+  .button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #6c63ff;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #0c7e0c;
+  }
+  
+  .inline-fields {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+  }
+  
+  .inline-fields label {
+    flex: 1;
+  }
+
+/* General styling for the select box */
+.react-select__control {
+    font-weight: 300; /* Light font for the input box */
+    font-size: 14px;
+}
+
+/* Styling for dropdown options */
+.react-select__menu {
+    z-index: 9999; /* Ensure dropdown is above other elements */
+}
+
+.react-select__option {
+    font-weight: 300; /* Light font for all options */
+    font-size: 14px;
+    color: #333; /* Default text color */
+    background-color: transparent; /* Default background color */
+}
+
+.react-select__option--is-selected {
+    font-weight: 500; /* Slightly bold for selected option */
+    color: #7E57C2; /* Highlight selected text color */
+    background-color: #F3E5F5; /* Background for selected */
+}
+
+.react-select__option--is-focused {
+    background-color: #F3E5F5; /* Lighter background on hover */
+    color: #333; /* Keep text color consistent on hover */
+}
+
+
+.switch-label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  margin-left: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
+}
+
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #57c257;
+}
+
+input:checked + .slider::before {
+  transform: translateX(20px);
+}
