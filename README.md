@@ -1,36 +1,61 @@
-Scholarship Fund DApp
-====================
+## EduFund - Scholarship Fund DApp
 
-A decentralized application for managing scholarship funds using blockchain. This project facilitates secure and transparent processes for applicants, donors, and reviewers.
+The Scholarship Fund DApp is a decentralized application designed to manage scholarship funds using blockchain technology. As an international student, I have personally experienced the financial and logistical hardships students face. These experiences inspired me to develop a platform that brings transparency, security, and efficiency to scholarship fund management. 
 
+This project is **implemented entirely from scratch** and is an original creation, not based on any existing projects. It showcases an understanding of blockchain technology, smart contract development, and user-centric design principles, tailored to address the unique challenges faced by students, donors, and reviewers. Below are the key features of the system:
 
-Team
--------
+Team-
 Sarita Joshi\
 saritajoshi@csu.fullerton.edu\
-Sarita-Joshi (@git)
+CWID - 884441866
 
 
-Features
---------
+### 1\. Smart Contract Design
 
--   **Applicants**:
-    -   Apply for scholarships.
-    -   Check the status of applications.
--   **Donors**:
-    -   Create and contribute to funds.
-    -   Track contributions.
--   **Reviewers**:
-    -   Approve or reject applications.
-    -   Ensure fair and transparent decision-making.
-    **Admin**:
-    -   Admin module to monitor and disubrse funds.
+-   **Comprehensive Functionality**: The smart contract handles the entire lifecycle of scholarship applications, fund creation, donations, and reviews, ensuring decentralized and automated processes.
+-   **Dynamic Reviewer List Updates**: Enables the contract to dynamically manage the list of reviewers for each fund, ensuring flexibility and adaptability.
+-   **Automatic Status Updates**: Applications are automatically updated to "Approved" once a configurable minimum number of approvals is reached, reducing manual oversight.
 
+### 2\. Security Features
+
+-   **Access Controls**: Implements stringent role-based access controls:
+    -   Only the contract owner can perform administrative actions, such as fund disbursement.
+    -   Only fund owners can manage and monitor their respective funds.
+-   **No Repeat Reviews**: Ensures reviewers cannot review the same application multiple times, maintaining fairness and accountability.
+-   **Transparent Workflow**: All transactions, reviews, and approvals are stored immutably on the blockchain, providing verifiable and tamper-proof records.
+
+### 3\. Role-Based Features
+
+-   **For Applicants**:
+    -   Simplifies the process of applying for scholarships with a user-friendly interface.
+    -   Provides real-time updates on the status of applications to keep students informed.
+-   **For Donors**:
+    -   Facilitates the creation of funds and allows targeted contributions.
+    -   Provides detailed insights into fund contributions and associated applications for better tracking.
+-   **For Reviewers**:
+    -   Tracks reviewer actions for accountability and ensures no duplication in reviews.
+    -   Offers an intuitive interface for approving or rejecting applications.
+-   **For Contract Owners**:
+    -   Aggregates critical data such as total funds, applications, and reviews for better decision-making.
+    -   Enables efficient fund disbursement while maintaining control over the system.
+
+### 4\. Gas Optimization
+
+-   **Cost Efficiency**: Optimized smart contract logic ensures minimal gas consumption for operations like application reviews and fund contributions.
+-   **Efficient Design**: Uses advanced Solidity techniques to reduce computational overhead and improve transaction speed.
+
+### 5\. User Interface and Experience
+
+-   **Ease of Use**: Designed with simplicity in mind, making fund creation, application submission, and review processes straightforward.
+-   **Real-Time Updates**: Ensures the frontend and backend are synchronized to reflect user actions and status changes immediately.
+-   **Scalable Architecture**: Built to handle a growing number of users and transactions while maintaining performance.
+
+This project combines cutting-edge technology with personal experience and empathy to deliver a platform that empowers students, donors, and reviewers. It provides a transparent, secure, and user-friendly solution for managing scholarship funds efficiently.
 
 * * * * *
 
-Project Setup
--------------
+### Project Setup
+
 
 ### Prerequisites
 
