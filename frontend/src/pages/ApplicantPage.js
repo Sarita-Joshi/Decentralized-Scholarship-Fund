@@ -33,7 +33,7 @@ const ApplicantPage = () => {
       
       // Fetch user's application status
       const application = await getApplicationByAddress(userAccount);
-      console.log({userAccount, 'status': application.status});
+      console.log({userAccount, 'status': application?.status});
       setApplicationStatus(application?.status || null);
 
       const topFunds = await getAllFunds('true');

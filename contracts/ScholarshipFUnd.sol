@@ -61,6 +61,10 @@ contract ScholarshipFund {
         owner = msg.sender;
     }
 
+    function getOwner() public view returns (address) {
+        return owner;
+    }
+
     // Application Functions
     function submitApplication(
         uint256 _requestedAmount,
@@ -85,18 +89,18 @@ contract ScholarshipFund {
         return applicationCount;
     }
 
-    function updateApplicationStatus(uint256 _id, bool approve) external onlyOwner {
+    function updateApplicationStatus(
+        uint256 _id,
+        bool approve
+    ) external onlyOwner {
         require(_id <= applicationCount, "Application does not exist");
         string memory _status = "Rejected";
         if (approve) {
             _status = "Approved";
-        } 
+        }
         applications[_id].status = _status;
         emit ApplicationStatusUpdated(_id, _status);
     }
-
-
-
 
     function reviewApplication(uint256 _applicationId, bool approve) external {
         require(
@@ -137,11 +141,7 @@ contract ScholarshipFund {
 
     function getApplication(
         uint256 _id
-    )
-        external
-        view
-        returns ( Application memory )
-    {
+    ) external view returns (Application memory) {
         require(_id <= applicationCount, "Application does not exist");
         Application memory app = applications[_id];
         return app;
@@ -184,13 +184,7 @@ contract ScholarshipFund {
         emit DonationReceived(msg.sender, _fundId, msg.value);
     }
 
-    function getFund(
-        uint256 _fundId
-    )
-        external
-        view
-        returns (Fund memory)
-    {
+    function getFund(uint256 _fundId) external view returns (Fund memory) {
         require(_fundId <= fundCount, "Fund does not exist");
         Fund memory fund = funds[_fundId];
         return fund;
@@ -237,10 +231,12 @@ contract ScholarshipFund {
         return false;
     }
 
-    function addReviewer(uint256 _fundId, address _reviewer) external onlyFundOwner(_fundId) {
-    // Access the fund in storage
-    Fund storage fund = funds[_fundId];
-    fund.reviewers.push(_reviewer); // Add the reviewer to the reviewers array
+    function addReviewer(
+        uint256 _fundId,
+        address _reviewer
+    ) external onlyFundOwner(_fundId) {
+        // Access the fund in storage
+        Fund storage fund = funds[_fundId];
+        fund.reviewers.push(_reviewer); // Add the reviewer to the reviewers array
+    }
 }
-}
-

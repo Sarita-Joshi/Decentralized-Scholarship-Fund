@@ -141,7 +141,6 @@ function DonorPage() {
         
             let errors = validateSection(formData);
             if (Object.keys(errors).length === 0) {
-                console.log("Fund Created:", formData);
                 formData.fundOwner = account;
                 console.log({formData, account});
                 const result = await CreateFundOnChain(formData);

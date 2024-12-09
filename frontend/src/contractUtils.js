@@ -38,12 +38,28 @@ export const connectWallet = async () => {
     alert("Please install MetaMask.");
     return null;
   }
-
-  const accounts = await window.ethereum.request({
-    method: "eth_requestAccounts",
-  });
-  account = accounts[0];
-  return accounts[0];
+  let message = null;
+  try {
+    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+    
+    if (accounts.length > 0) {
+      message = `Already connected: ${accounts}`;
+      account = accounts[0];
+      return (account, message);
+    } else {
+      const newAccounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      console.log("Connected:", newAccounts);
+      account = newAccounts[0];
+      return (account, message);
+    }
+  } catch (error) {
+    if (error.code === -32002) {
+      message = "MetaMask request is already in progress. Please complete the request.";
+    } else {
+      message =  `MetaMask connection failed: ${error.message}`;
+    }
+    return (null, message);
+  }
 };
 
 export const getUserAccount = async () => {
@@ -54,11 +70,12 @@ export const getUserAccount = async () => {
 };
 
 // Check if the connected account is the contract owner
-export const checkIfOwner = async (account) => {
+export const checkIfOwner = async (account_) => {
   try {
     const contract = await getContractInstance();
-    const ownerAddress = await contract.owner();
-    return account.toLowerCase() === ownerAddress.toLowerCase();
+    const ownerAddress = await contract.getOwner();
+    console.log([ownerAddress, account_])
+    return account_.toLowerCase() === ownerAddress.toLowerCase();
   } catch (error) {
     console.error("Error checking ownership:", error);
     return false;
@@ -149,11 +166,22 @@ export const CreateFundOnChain = async (fundData = {}) => {
     } = fundData;
 
     const contract = await getContractInstance();
-    const fundAmount = ethers.utils.parseEther(initialBalance);
-    console.log(fundName, minimumApprovals, reviewers, initialBalance, fundAmount);
-    const tx = await contract.createFund(fundName, minimumApprovals, reviewers, {
-      value: fundAmount,
-    });
+    const fundAmount = ethers.utils.parseEther(initialBalance.toString());
+    console.log(
+      fundName,
+      minimumApprovals,
+      reviewers,
+      initialBalance,
+      fundAmount
+    );
+    const tx = await contract.createFund(
+      fundName,
+      minimumApprovals,
+      reviewers,
+      {
+        value: fundAmount,
+      }
+    );
     const receipt = await tx.wait();
     const fundId = receipt.events[0].args[0];
     return { success: true, message: "Fund created!", id: fundId.toString() };
@@ -164,16 +192,38 @@ export const CreateFundOnChain = async (fundData = {}) => {
 };
 
 // Approve or reject an application
-export const approveApplication = async (applicationId = 1, approve = true) => {
+export const approveApplication = async (applicationId, approve) => {
   try {
+    // Get the contract instance
     const contract = await getContractInstance();
-    const tx = await contract.updateApplicationStatus(applicationId, approve);
-    await tx.wait();
+
+    const signer = await contract.signer.getAddress();
+    if (!signer) {
+      throw new Error("No wallet connected. Please connect MetaMask.");
+    }
+
+    // Call the reviewApplication function
+    const tx = await contract.reviewApplication(applicationId, approve);
+    // Wait for the transaction to be confirmed
+    const receipt = await tx.wait();
+    console.log("Transaction:", receipt);
+
     const status = approve ? "Approved" : "Rejected";
     return { success: true, message: `Application ${status}.` };
   } catch (error) {
+    // Log and return the error
     console.error("Application update failed:", error);
-    return { success: false, message: "Failed to update application." };
+
+    // Return an appropriate error message based on the type of error
+    if (error.message.includes("Application does not exist")) {
+      return { success: false, message: "The application does not exist." };
+    } else if (error.message.includes("not authorized to review this application")) {
+      return { success: false, message: "You are not authorized to review this application." };
+    } else if (error.message.includes("Already reviewed this application")) {
+      return { success: false, message: "You have already reviewed this application." };
+    } else {
+      return { success: false, message: "Failed to update application." };
+    }
   }
 };
 

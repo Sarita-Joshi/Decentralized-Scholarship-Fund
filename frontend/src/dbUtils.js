@@ -92,9 +92,7 @@ export const getApplicationByAddress = async (id) => {
         const response = await axios.get(`${API_BASE_URL}/applications/${id}`);
         return response.data;
     } catch (error) {
-        if (error.status === 404) return null;
-        console.error("Error fetching application:", error);
-        throw error;
+        return null
     }
 };
 

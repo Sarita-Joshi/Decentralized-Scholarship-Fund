@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginModal.css';
-import { connectWallet, getUserAccount } from "../../contractUtils";
+import { checkIfOwner, connectWallet, getUserAccount } from "../../contractUtils";
 import { FaInfoCircle } from 'react-icons/fa';
 
 function LoginModal({ role, closeModal }) {
@@ -26,31 +26,44 @@ function LoginModal({ role, closeModal }) {
     useEffect(() => {
         const loadApplications = async () => {
             const userAccount = await getUserAccount();
-            setAccount(userAccount);
-            setMetaMaskChecked(true);
+            if (userAccount){
+                setAccount(userAccount);
+                setMetaMaskChecked(true);
+            }
         };
         loadApplications();
     }, [metaMaskChecked]);
 
 
-    const authenticateUser = () => {
-        const roleCredentials = credentials[selectedRole];
-        if (username === roleCredentials.username && password === roleCredentials.password) {
-            return true;
-        } else if (username === credentials.owner.username && password === credentials.owner.password) {
-            setSelectedRole('owner');
-            return true;
-        } else {
-            setError('Invalid credentials, please try again.');
-            return false;
+    const authenticateUser = async () => {
+        // const roleCredentials = credentials[selectedRole];
+        // if (username === roleCredentials.username && password === roleCredentials.password) {
+        //     return true;
+        // } else if (username === credentials.owner.username && password === credentials.owner.password) {
+        //     setSelectedRole('owner');
+        //     return true;
+        // } else {
+        //     setError('Invalid credentials, please try again.');
+        //     return false;
+        // }
+        console.log([selectedRole, account]);
+        if (selectedRole === "owner") {
+            console.log(["HIIIIIIII"]);
+            const isOwner = await checkIfOwner(account);
+            console.log([isOwner, account])
+            if (!isOwner) {
+                alert("Warning - Owner Account Not Found. Please try a different role or connect different wallet.");
+                return false;
+            }
         }
+        return true
     };
 
     const connectMetamask = async () => {
         try {
-            const userAccount = await connectWallet();
+            let userAccount, message = await connectWallet();
             if (!userAccount) {
-                alert("Failed to connect to MetaMask. Please try again.");
+                alert(message);
                 return false;
             }
             setAccount(userAccount);
@@ -64,7 +77,7 @@ function LoginModal({ role, closeModal }) {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        const isAuthenticated = authenticateUser();
+        const isAuthenticated = await authenticateUser();
         if (isAuthenticated && termsChecked && metaMaskChecked) {
             if (selectedRole === 'applicant') navigate('/applicant');
             else if (selectedRole === 'donor') navigate('/donor');
@@ -78,7 +91,7 @@ function LoginModal({ role, closeModal }) {
     return (
         <div className="modal-overlay">
             <div className="modal-content">
-                <h2 className="h22">Login</h2>
+                <h2 className="h22">Connect To MetaMask</h2>
 
                 <div className="custom-dropdown" onClick={() => setShowDropdown(!showDropdown)}>
                     <span>As {selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}</span>
@@ -94,19 +107,6 @@ function LoginModal({ role, closeModal }) {
                 </div>
 
                 <form onSubmit={handleLogin}>
-                    <input
-                        type="text"
-                        placeholder="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-
                     <div className="checkbox-group">
                         <label>
                             <input
@@ -134,7 +134,7 @@ function LoginModal({ role, closeModal }) {
                         </label>
                     </div>
 
-                    <button type="submit">Login</button>
+                    <button type="submit">Continue</button>
                     {error && <p className="error-message">{error}</p>}
 
                 <button onClick={closeModal} className="close-button">Cancel</button>

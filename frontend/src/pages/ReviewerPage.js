@@ -27,8 +27,9 @@ function ReviewerPage() {
 
     // Handle application status updates
     const handleStatusChange = async (id, mongoHash, newStatus) => {
-        console.log({id, mongoHash, newStatus})
-        const result = await approveApplication(id, newStatus);
+        let status = newStatus==='Approved' ? true : false;
+        console.log({id, mongoHash, newStatus, status})
+        const result = await approveApplication(id, status);
         alert(result.message);
 
         if (result.success) {
@@ -80,7 +81,7 @@ function ReviewerPage() {
                         <h3>{metrics.approvedApplications+metrics.fundedApplications}</h3>
                     </div>
                     <div className="stat-card">
-                    <p className='badge badge2'>Approved Amount</p>
+                    <p className='badge badge2'>Application Amount</p>
                         <h3>{metrics.totalApplicationAmount} ETH</h3>
                     </div>
                     <div className="stat-card">

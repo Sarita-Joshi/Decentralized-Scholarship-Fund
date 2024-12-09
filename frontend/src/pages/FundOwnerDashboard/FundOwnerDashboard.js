@@ -30,6 +30,36 @@ const FundOwnerDashboard = () => {
     totalDonations: 0,
   });
 
+  const actions = {
+    approve: async (row) => {
+      const app = applications.find((app) => app._id === row._id);
+      await approveApplication(app.applicantId, "Approved");
+      setApplications((prevApps) =>
+        prevApps.map((app) =>
+          app._id === row._id ? { ...app, status: "Approved" } : app
+        )
+      );
+    },
+    reject: async (row) => {
+      const app = applications.find((app) => app._id === row._id);
+      await approveApplication(app.applicantId, "Rejected");
+      setApplications((prevApps) =>
+        prevApps.map((app) =>
+          app._id === row._id ? { ...app, status: "Rejected" } : app
+        )
+      );
+    },
+    disburse: async (row) => {
+      const app = applications.find((app) => app._id === row._id);
+      await disburseFunds(app.applicantId);
+      setApplications((prevApps) =>
+        prevApps.map((app) =>
+          app._id === row._id ? { ...app, status: "Funded" } : app
+        )
+      );
+    },
+  };
+
   const stats = [
     {
       title: "Applications",
@@ -113,8 +143,8 @@ const FundOwnerDashboard = () => {
           </Typography>
           <ApplicantTable
             data={applications}
-            actions={{}}
-            filters={{ showSearch: true, showSort: true, showFilter: true }}
+            actions={actions}
+            filters={{ showSearch: true, showSort: true, showFilter: true, showOwner: true }}
           />
         </Card>
 

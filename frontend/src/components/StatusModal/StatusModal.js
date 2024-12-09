@@ -36,14 +36,14 @@ function StatusModal({ status, onClose }) {
                 };
             case 'Funded':
                 return {
-                    message: "Hurrey! Your application has bee Funded.",
+                    message: "Hurrey! Your application has been Funded.",
                     image: approved, 
                     quote: "Yey! Make the best of this opportunity.",
                     showCelebration: false
                 };
             default:
                 return {
-                    message: "You do not have an active application.",
+                    message: "You do not have an active application. Start Now!",
                     image: start, // Replace with no application image URL
                     quote: "Start your first application!",
                     showCelebration: false
