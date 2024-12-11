@@ -43,7 +43,7 @@ export const getAllFunds = async (format='true') => {
         const response = await axios.get(`${API_BASE_URL}/funds?format=${format}`);
         return response.data;
     } catch (error) {
-        console.error("Error fetching applications:", error);
+        console.error("Error fetching funds:", error);
         throw error;
     }
 };
@@ -108,10 +108,13 @@ export const getAllApplications = async () => {
 };
 
 // Update application status by ID
-export const updateAppStatus = async (id, status) => {
+export const updateAppStatus = async (id, status, reviewerId) => {
     try {
-        const response = await axios.put(`${API_BASE_URL}/applications/${id}/status`, { status });
-        return response.data;
+        const response = await axios.put(`${API_BASE_URL}/applications/${id}/status`, {
+            status,
+            reviewerId,
+          });
+          return response.data;
     } catch (error) {
         console.error("Error updating application status:", error);
         throw error;
@@ -121,7 +124,7 @@ export const updateAppStatus = async (id, status) => {
 // Update application status by ID
 export const updateAppId = async (id, applicantId) => {
     try {
-        const response = await axios.put(`${API_BASE_URL}/applications/${id}/status`, { applicantId });
+        const response = await axios.put(`${API_BASE_URL}/applications/${id}/update`, { applicantId });
         return response.data;
     } catch (error) {
         console.error("Error updating application status:", error);

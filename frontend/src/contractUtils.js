@@ -74,7 +74,8 @@ export const checkIfOwner = async (account_) => {
   try {
     const contract = await getContractInstance();
     const ownerAddress = await contract.getOwner();
-    console.log([ownerAddress, account_])
+    console.log(ownerAddress);
+    console.log(["ggggg",ownerAddress, account_])
     return account_.toLowerCase() === ownerAddress.toLowerCase();
   } catch (error) {
     console.error("Error checking ownership:", error);
@@ -163,12 +164,14 @@ export const CreateFundOnChain = async (fundData = {}) => {
       minimumApprovals = 1,
       reviewers = [],
       initialBalance = "0.01",
+      autoDisburseFunds = false,
     } = fundData;
 
     const contract = await getContractInstance();
     const fundAmount = ethers.utils.parseEther(initialBalance.toString());
     console.log(
       fundName,
+      autoDisburseFunds,
       minimumApprovals,
       reviewers,
       initialBalance,
@@ -178,6 +181,7 @@ export const CreateFundOnChain = async (fundData = {}) => {
       fundName,
       minimumApprovals,
       reviewers,
+      autoDisburseFunds,
       {
         value: fundAmount,
       }
@@ -194,7 +198,6 @@ export const CreateFundOnChain = async (fundData = {}) => {
 // Approve or reject an application
 export const approveApplication = async (applicationId, approve) => {
   try {
-    // Get the contract instance
     const contract = await getContractInstance();
 
     const signer = await contract.signer.getAddress();
@@ -204,28 +207,41 @@ export const approveApplication = async (applicationId, approve) => {
 
     // Call the reviewApplication function
     const tx = await contract.reviewApplication(applicationId, approve);
-    // Wait for the transaction to be confirmed
     const receipt = await tx.wait();
     console.log("Transaction:", receipt);
 
-    const status = approve ? "Approved" : "Rejected";
-    return { success: true, message: `Application ${status}.` };
-  } catch (error) {
-    // Log and return the error
-    console.error("Application update failed:", error);
+    // Fetch updated application details
+    const updatedApp = await contract.getApplication(applicationId);
+    const fund_ = await contract.getFund(updatedApp.fundId);
+    const autoDisbursed = updatedApp.status === "Funded";
 
-    // Return an appropriate error message based on the type of error
-    if (error.message.includes("Application does not exist")) {
+    console.log(updatedApp);
+    console.log(fund_);
+
+    const status = updatedApp.status;
+    return {
+      success: true,
+      message: `Application ${status}.`,
+      status,
+      autoDisbursed,
+    };
+  } catch (error) {
+    console.error("Application update failed:", error);
+    error = error.data.message;
+    alert(error);
+    if (error.includes("Application does not exist")) {
       return { success: false, message: "The application does not exist." };
-    } else if (error.message.includes("not authorized to review this application")) {
+    } else if (error.includes("not authorized to review this application")) {
       return { success: false, message: "You are not authorized to review this application." };
-    } else if (error.message.includes("Already reviewed this application")) {
+      
+    } else if (error.includes("Already reviewed this application")) {
       return { success: false, message: "You have already reviewed this application." };
     } else {
       return { success: false, message: "Failed to update application." };
     }
   }
 };
+
 
 // Disburse funds to an approved applicant
 export const disburseFunds = async (applicationId = 1) => {
@@ -238,6 +254,10 @@ export const disburseFunds = async (applicationId = 1) => {
       message: `Funds disbursed to applicant ${applicationId}!`,
     };
   } catch (error) {
+    console.log(error.message);
+    if (error.data.message.includes("not authorized")) {
+      alert("Permission Denied: Incorrect wallet address");
+    }
     console.error("Disbursement failed:", error);
     return { success: false, message: "Failed to disburse funds." };
   }

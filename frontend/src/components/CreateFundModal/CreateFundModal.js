@@ -208,10 +208,10 @@ const CreateFundModal = ({ isOpen, onClose, onSubmit }) => {
                 name="reviewers"
                 value={formData.reviewers}
                 onChange={(e) =>
-                  setFormData({
+                  e.target.value ? setFormData({
                     ...formData,
                     reviewers: e.target.value.split(","),
-                  })
+                  })  : e.target.value
                 }
               />
             </label>

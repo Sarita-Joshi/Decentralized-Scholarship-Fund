@@ -37,6 +37,9 @@ const applicationSchema = new mongoose.Schema(
     applicantId: { type: String, required: true },
     status: { type: String, default: "Pending" },
     fundId: { type: String, required: true }, // Link to Fund
+    approvers: [{ type: String }], // Array of reviewer IDs who approved
+    rejectors: [{ type: String }], // Array of reviewer IDs who rejected
+    requiredApprovals: {type: Number, default: 1},
   },
   { timestamps: true }
 );
@@ -86,6 +89,8 @@ const Donation = mongoose.model("Donation", donationSchema);
 async function deleteIncompleteApplications() {
   try {
     const result = await Application.deleteMany({ applicantId: "default" });
+    console.log("Deleted many");
+    console.log(result);
     return `${result.deletedCount} incomplete applications deleted successfully.`;
   } catch (error) {
     throw new Error(`Error deleting incomplete applications: ${error.message}`);
@@ -95,17 +100,6 @@ async function deleteIncompleteApplications() {
 //////////////////////
 // Fund Routes
 //////////////////////
-
-// Create a new fund
-app.post("/funds", async (req, res) => {
-  try {
-    const fund = new Fund(req.body);
-    await fund.save();
-    res.status(201).json(fund);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
 
 async function formatFunds(funds) {
   const applications = await Application.find();
@@ -126,10 +120,33 @@ async function formatFunds(funds) {
       totalApplicants: fundApplications.length,
       fundsNeeded: fundsNeeded,
       fundOwner: fund.fundOwner,
+      minApprovals: fund.minimumApprovals,
+      autoDisburseFunds: fund.autoDisburseFunds
     };
   });
   return transformedFunds;
 }
+
+// Create a new fund
+app.post("/funds", async (req, res) => {
+  try {
+    const fund = new Fund(req.body);
+    const first_donation = new Donation({
+      donorAddress: fund.fundOwner,
+      amount: fund.initialBalance,
+      fundId: fund.fundId,
+      fundOwner: fund.fundOwner,
+      fundName: fund.fundName
+    });
+    await fund.save();
+    await first_donation.save();
+
+    funds = await formatFunds([fund]);
+    res.status(201).json(funds[0]);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 // Get all funds
 app.get("/funds", async (req, res) => {
@@ -243,19 +260,59 @@ app.get("/applications/:id", async (req, res) => {
 // Update application status by ID
 app.put("/applications/:id/status", async (req, res) => {
   try {
+  const { id } = req.params;
+  const { status, reviewerId } = req.body;
+  const application = await Application.findById(id);
+
+    if (!application) {
+      return res.status(404).json({ error: "Application not found" });
+    }
+
+    if (status === "Approved") {
+      if (!reviewerId) {
+        return res.status(404).json({ error: "Reviewer not found" });
+      }
+      if (!application.approvers.includes(reviewerId)) {
+        application.approvers.push(reviewerId);
+        application.requiredApprovals--;
+
+        if (application.requiredApprovals===0) {
+          application.status = status;
+        }
+      }
+    } else if (status === "Rejected") {
+      if (!reviewerId) {
+        return res.status(404).json({ error: "Reviewer not found" });
+      }
+      if (!application.rejectors.includes(reviewerId)) {
+        application.rejectors.push(reviewerId);
+      }
+    } else {
+        application.status = status; // Funded
+    }
+    const updatedApplication = await application.save();
+    res.status(200).json(updatedApplication);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update application status" });
+  }
+});
+
+// Update application status by ID
+app.put("/applications/:id/update", async (req, res) => {
+  try {
     const application = await Application.findOneAndUpdate(
       { _id: req.params.id },
       req.body,
       { new: true }
     );
-    if (!application) {
-      return res.status(404).json({ error: "Application not found" });
-    }
-    res.json(application);
+    res.status(200).json(application);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: "Failed to update application status" });
   }
 });
+
 
 // Get all approved applications
 app.get("/approved-applications", async (req, res) => {

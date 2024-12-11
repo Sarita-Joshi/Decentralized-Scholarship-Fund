@@ -1,9 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography, Avatar, Button } from "@mui/material";
 import logo from '../../assets/logo2.png';
 import StatCard from "../StatCard/StatCard";
+import { useAuth } from "../../AuthContext";
+import { useNavigate } from "react-router-dom";
+
+
 
 const Header = ({ profile, stats, cta }) => {
+
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const [showLogin, setShowLogin] = useState(false);
+
+  const handleAvatarClick = () => {
+    console.log('clicked!');
+    setShowLogin((prev) => !prev); // Toggle login button visibility
+    
+
+  };
+
+  const handleLogout = () => {
+    console.log("Logout button clicked");
+    logout(); // Clear authentication state
+    navigate("/"); // Redirect to login page
+    alert("You have been logged out.");
+  };
+  
+
   return (
     <Box>
       {/* Purple Header */}
@@ -74,7 +98,8 @@ const Header = ({ profile, stats, cta }) => {
         height: "40px",
         border: "2px solid #fff", // Optional: Add a white border for contrast
       }}
-    />
+      onClick={handleAvatarClick}
+      />
   </Box>
 </Box>
       {/* Stat Cards - Positioned below header and pulled up */}
@@ -104,6 +129,39 @@ const Header = ({ profile, stats, cta }) => {
           />
         ))}
       </Box>
+
+      {showLogin && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50px", // Position the button below the avatar
+            right: "-50px",
+            transform: "translateX(-50%)",
+            backgroundColor: "transparent",
+            borderRadius: "5px",
+            
+            zIndex: 400
+          }}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleLogout}
+            style={{
+              padding: "8px 10px",
+              width: "fit-content",
+              marginRight: "30px",
+              borderRadius: "5px",
+              color: "#6c63ff",
+              backgroundColor: "#fefefe",
+              fontWeight: 700,
+            }}
+          >
+            Logout
+          </Button>
+        </div>
+      )}
+
     </Box>
   );
 };

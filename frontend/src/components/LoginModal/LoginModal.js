@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginModal.css';
 import { checkIfOwner, connectWallet, getUserAccount } from "../../contractUtils";
+import { useAuth } from "../../AuthContext";
+
 import { FaInfoCircle } from 'react-icons/fa';
 
 function LoginModal({ role, closeModal }) {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const { login } = useAuth();
     const [error, setError] = useState(null);
     const [account, setAccount] = useState(null);
     const [termsChecked, setTermsChecked] = useState(false);
@@ -34,18 +35,7 @@ function LoginModal({ role, closeModal }) {
         loadApplications();
     }, [metaMaskChecked]);
 
-
     const authenticateUser = async () => {
-        // const roleCredentials = credentials[selectedRole];
-        // if (username === roleCredentials.username && password === roleCredentials.password) {
-        //     return true;
-        // } else if (username === credentials.owner.username && password === credentials.owner.password) {
-        //     setSelectedRole('owner');
-        //     return true;
-        // } else {
-        //     setError('Invalid credentials, please try again.');
-        //     return false;
-        // }
         console.log([selectedRole, account]);
         if (selectedRole === "owner") {
             console.log(["HIIIIIIII"]);
@@ -56,6 +46,7 @@ function LoginModal({ role, closeModal }) {
                 return false;
             }
         }
+        login(selectedRole, account);
         return true
     };
 

@@ -8,7 +8,7 @@ import smartContractsIcon from '../assets/home/ethereum.png';
 import { FcDisclaimer } from 'react-icons/fc';
 import Footer from '../components/Footer/Footer';
 import logo from '../assets/logo2.png';
-import homegif from '../assets/home/Research paper.gif';
+import homegif from '../assets/file.png';
 import approvergif from '../assets/home/approver.gif';
 import donorgif from '../assets/home/donor.gif';
 import applgif from '../assets/home/appl.gif';
@@ -126,7 +126,7 @@ function Home() {
             </div>
                 
                 <p className="disclaimer-text">
-                    The data you provide us with does not persist on any server-side databases but is completely stored on the blockchain. We respect your privacy and strive to achieve the most secure system. Your data is safe.
+                    The data you provide us with does persist on a server-side databases and is stored on the blockchain. We respect your privacy and strive to achieve the most secure system. Your data is safe.
                 </p>
 
                 </div>

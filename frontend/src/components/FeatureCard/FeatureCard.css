@@ -33,16 +33,27 @@
     
 }
 
+.rounded-image {
+    display: flex;
+    justify-content: center;
+}
+
+.rounded-image img {
+    height: 120px; /* Adjust size as needed */
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover; /* Ensures the image is properly scaled */
+    border: 2px solid #ccc; /* Optional: Adds a border */
+  }
+
 .feature-card-title {
     font-size: 1.5rem;
     font-weight: bold;
     color: #3d398f;
-    margin-bottom: 12px;
+    margin-bottom: 5px;
 }
 
 .feature-card-content {
     font-size: 1rem;
     color: #666;
     line-height: 1.6;
-    margin-top: 10px; /* Optional for additional spacing */
 }

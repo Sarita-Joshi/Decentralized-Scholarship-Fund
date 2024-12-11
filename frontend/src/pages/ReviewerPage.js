@@ -26,38 +26,47 @@ function ReviewerPage() {
     }, []);
 
     // Handle application status updates
-    const handleStatusChange = async (id, mongoHash, newStatus) => {
-        let status = newStatus==='Approved' ? true : false;
-        console.log({id, mongoHash, newStatus, status})
-        const result = await approveApplication(id, status);
-        alert(result.message);
+    const handleStatusChange = async (applicantId, mongoHash, status) => {
+      console.log({applicantId, mongoHash, status}) ; 
+      const response = await approveApplication(applicantId, status);
+        
+          if (response.success) {
+            let newStatus = response.status;
+      
+            // Check if the application was auto-disbursed
+            if (response.autoDisbursed) {
+              newStatus = "Funded";
+            }
+            console.log({applicantId, mongoHash, newStatus, status});
+      
+            // Update MongoDB with the new status
+            await updateAppStatus(mongoHash, newStatus, account);
 
-        if (result.success) {
-            await updateAppStatus(mongoHash, newStatus);
+            // Update the frontend state
             setApplications((prevApps) =>
                 prevApps.map((app) =>
-                    app._id === mongoHash ? { ...app, status: newStatus } : app
-                )
-            );
-        }
+                  app._id === mongoHash ? { ...app, status: newStatus } : app
+              )
+              );
+          } else {
+            console.error(response.message);
+          }
     };
 
-    // Actions for approve/reject buttons
     const actions = {
         approve: async (row) => {
             alert(`Approving application ID: ${row._id}`);
-            const appplicant = applications.filter(item => item._id === row._id)[0];
-            console.log(appplicant);
-            // Here you would implement the logic to approve this application
-            await handleStatusChange(appplicant.applicantId, appplicant._id, 'Approved');
+            const app = applications.find((app) => app._id === row._id);
+            await handleStatusChange(app.applicantId, app._id, 'Approved');
+
         },
+      
         reject: async (row) => {
-            alert(`Rejecting application ID: ${row._id}`);
-            const appplicant = applications.filter(item => item._id === row._id);
-            // Here you would implement the logic to approve this application
-            await handleStatusChange(appplicant.applicantId, appplicant._id, 'Approved');
-        },
-    };
+          alert(`Approving application ID: ${row._id}`);
+            const app = applications.find((app) => app._id === row._id);
+            await handleStatusChange(app.applicantId, app._id, "Rejected");
+        }
+      };
 
     return (
         <div className="reviewer-page">
@@ -72,7 +81,7 @@ function ReviewerPage() {
                     <div className="profile-details">
                         <h3>John Doe</h3>
                         <p>Email: john.doe@example.com</p>
-                        <p>Address: <strong>0xABC123...XYZ</strong></p>
+                        <p>Address: <strong>{account}</strong></p>
                     </div>
                 </div>
                 <div className="stats-section">

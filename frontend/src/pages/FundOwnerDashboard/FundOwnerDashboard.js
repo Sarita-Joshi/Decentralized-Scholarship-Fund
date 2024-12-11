@@ -15,11 +15,12 @@ import {
   disburseFunds,
   getUserAccount,
 } from "../../contractUtils";
-import { getAllDonations, getAllApplications, getMetricsMongo } from "../../dbUtils";
+import { getAllDonations, getAllApplications, getMetricsMongo, updateAppStatus } from "../../dbUtils";
 import Footer from "../../components/Footer/Footer";
 
 const FundOwnerDashboard = () => {
   const [applications, setApplications] = useState([]);
+  const [account, setAccount] = useState([]);
   const [donations, setDonations] = useState([]);
   const [metrics, setMetrics] = useState({
     totalApplications: 0,
@@ -30,33 +31,90 @@ const FundOwnerDashboard = () => {
     totalDonations: 0,
   });
 
+    // Fetch data on component mount
+    useEffect(() => {
+      const fetchData = async () => {
+        const userAccount = await getUserAccount();
+        const appData = await getAllApplications(); // Fetch all applications
+        const donationData = await getAllDonations(); // Fetch all donations
+  
+        // Update state with fetched data
+        setAccount(userAccount);
+        setApplications(appData);
+        setDonations(donationData);
+  
+        const metrics_ = await getMetricsMongo({fundOwner: userAccount});
+        setMetrics(metrics_);
+      };
+  
+      fetchData();
+    }, []);
+  
+
   const actions = {
     approve: async (row) => {
       const app = applications.find((app) => app._id === row._id);
-      await approveApplication(app.applicantId, "Approved");
-      setApplications((prevApps) =>
-        prevApps.map((app) =>
-          app._id === row._id ? { ...app, status: "Approved" } : app
-        )
-      );
+      const response = await approveApplication(app.applicantId, true);
+  
+      if (response.success) {
+        let newStatus = "Approved";
+  
+        // Check if the application was auto-disbursed
+        if (response.autoDisbursed) {
+          newStatus = "Funded";
+        }
+  
+        // Update the frontend state
+        setApplications((prevApps) =>
+          prevApps.map((app) =>
+            app._id === row._id ? { ...app, status: newStatus } : app
+          )
+        );
+  
+        // Update MongoDB with the new status
+        await updateAppStatus(app.applicantId, newStatus, account);
+      } else {
+        console.error(response.message);
+      }
     },
+  
     reject: async (row) => {
       const app = applications.find((app) => app._id === row._id);
-      await approveApplication(app.applicantId, "Rejected");
-      setApplications((prevApps) =>
-        prevApps.map((app) =>
-          app._id === row._id ? { ...app, status: "Rejected" } : app
-        )
-      );
+      const response = await approveApplication(app.applicantId, false);
+  
+      if (response.success) {
+        // Update the frontend state
+        setApplications((prevApps) =>
+          prevApps.map((app) =>
+            app._id === row._id ? { ...app, status: "Rejected" } : app
+          )
+        );
+  
+        // Update MongoDB with the rejected status
+        await updateAppStatus(app._id, "Rejected", account);
+      } else {
+        console.error(response.message);
+      }
     },
+  
     disburse: async (row) => {
+      console.log(['disburse', row.applicantId]);
       const app = applications.find((app) => app._id === row._id);
-      await disburseFunds(app.applicantId);
-      setApplications((prevApps) =>
-        prevApps.map((app) =>
-          app._id === row._id ? { ...app, status: "Funded" } : app
-        )
-      );
+      const response = await disburseFunds(app.applicantId);
+  
+      if (response.success) {
+        // Update the frontend state
+        setApplications((prevApps) =>
+          prevApps.map((app) =>
+            app._id === row._id ? { ...app, status: "Funded" } : app
+          )
+        );
+  
+        // Update MongoDB with the funded status
+        await updateAppStatus(app._id, "Funded", account);
+      } else {
+        console.error(response.message);
+      }
     },
   };
 
@@ -94,24 +152,6 @@ const FundOwnerDashboard = () => {
     email: "john.doe@example.com",
     address: "123 Blockchain Avenue, Ethereum City",
   };
-
-  // Fetch data on component mount
-  useEffect(() => {
-    const fetchData = async () => {
-      const userAccount = await getUserAccount();
-      const appData = await getAllApplications(); // Fetch all applications
-      const donationData = await getAllDonations(); // Fetch all donations
-
-      // Update state with fetched data
-      setApplications(appData);
-      setDonations(donationData);
-
-      const metrics_ = await getMetricsMongo({fundOwner: userAccount});
-      setMetrics(metrics_);
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <div>

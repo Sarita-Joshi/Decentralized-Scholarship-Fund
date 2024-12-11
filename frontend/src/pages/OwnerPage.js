@@ -11,6 +11,7 @@ import {
   getAllApplications,
   getAllFunds,
   getMetricsMongo,
+  updateAppStatus,
 } from "../dbUtils";
 import Header from "../components/Header/Header";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -79,32 +80,69 @@ function OwnerPage() {
   const actions = {
     approve: async (row) => {
       const app = applications.find((app) => app._id === row._id);
-      await approveApplication(app.applicantId, "Approved");
-      setFilteredApplications((prevApps) =>
-        prevApps.map((app) =>
-          app._id === row._id ? { ...app, status: "Approved" } : app
-        )
-      );
+      const response = await approveApplication(app.applicantId, true);
+  
+      if (response.success) {
+        let newStatus = "Approved";
+  
+        // Check if the application was auto-disbursed
+        if (response.autoDisbursed) {
+          newStatus = "Funded";
+        }
+  
+        // Update the frontend state
+        setFilteredApplications((prevApps) =>
+          prevApps.map((app) =>
+            app._id === row._id ? { ...app, status: newStatus } : app
+          )
+        );
+  
+        // Update MongoDB with the new status
+        await updateAppStatus(app.applicantId, newStatus, account);
+      } else {
+        console.error(response.message);
+      }
     },
+  
     reject: async (row) => {
       const app = applications.find((app) => app._id === row._id);
-      await approveApplication(app.applicantId, "Rejected");
-      setFilteredApplications((prevApps) =>
-        prevApps.map((app) =>
-          app._id === row._id ? { ...app, status: "Rejected" } : app
-        )
-      );
+      const response = await approveApplication(app.applicantId, false);
+  
+      if (response.success) {
+        // Update the frontend state
+        setFilteredApplications((prevApps) =>
+          prevApps.map((app) =>
+            app._id === row._id ? { ...app, status: "Rejected" } : app
+          )
+        );
+  
+        // Update MongoDB with the rejected status
+        await updateAppStatus(app._id, "Rejected", account);
+      } else {
+        console.error(response.message);
+      }
     },
+  
     disburse: async (row) => {
       const app = applications.find((app) => app._id === row._id);
-      await disburseFunds(app.applicantId);
-      setFilteredApplications((prevApps) =>
-        prevApps.map((app) =>
-          app._id === row._id ? { ...app, status: "Funded" } : app
-        )
-      );
+      const response = await disburseFunds(app.applicantId);
+  
+      if (response.success) {
+        // Update the frontend state
+        setFilteredApplications((prevApps) =>
+          prevApps.map((app) =>
+            app._id === row._id ? { ...app, status: "Funded" } : app
+          )
+        );
+  
+        // Update MongoDB with the funded status
+        await updateAppStatus(app._id, "Funded", account);
+      } else {
+        console.error(response.message);
+      }
     },
   };
+  
 
   const getRandomColor = (index) => {
     const colors = [

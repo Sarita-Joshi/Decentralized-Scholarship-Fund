@@ -180,6 +180,8 @@ function DonorPage() {
                             totalFunds={fund.totalFunds}
                             totalApplicants={fund.totalApplicants}
                             fundsNeeded={fund.fundsNeeded}
+                            minimumApprovals={fund.minApprovals}
+                            autoDisburse={fund.autoDisburseFunds}
                             buttonLabel={null}
                             onDonate={() => {openDialog(fund)}}
                         />

@@ -13,6 +13,8 @@ const FundCard = ({
     totalFunds,
     totalApplicants,
     fundsNeeded,
+    minimumApprovals,
+    autoDisburse,
     buttonLabel,
     onDonate,
 }) => {
@@ -25,7 +27,6 @@ const FundCard = ({
         }
         return banners[random.int(1,4)-1];
     };
-
 
     return (
         <div className="fund-card">
@@ -42,6 +43,9 @@ const FundCard = ({
                     </p>
                     <p>
                         <strong>Funds Needed:</strong> {fundsNeeded} ETH
+                    </p>
+                    <p>
+                        <strong>Minimum Approvals Needed:</strong> {minimumApprovals}, {autoDisburse? "Auto": "Owner"}
                     </p>
                 </div>
                 <button className="donate-btn" onClick={onDonate}>

@@ -26,6 +26,7 @@ contract ScholarshipFund {
         string name;
         bool approved; // Whether the fund is approved by the contract owner
         address[] reviewers; // List of reviewer addresses for this fund (empty means open to all)
+        bool autoApprove;
     }
 
     mapping(uint256 => Application) public applications;
@@ -65,7 +66,33 @@ contract ScholarshipFund {
         return owner;
     }
 
-    // Application Functions
+    function getFundOwner(uint256 _fundId) public view returns (address) {
+        require(_fundId <= fundCount, "Fund does not exist");
+        return funds[_fundId].fundOwner;
+    }
+
+    // Fund Functions
+    function createFund(
+        string memory _name,
+        uint256 _minApprovals,
+        address[] memory _reviewers,
+        bool _autoApprove
+    ) external payable returns (uint256) {
+        fundCount++;
+        funds[fundCount] = Fund(
+            fundCount,
+            msg.sender,
+            msg.value,
+            _minApprovals,
+            _name,
+            false,
+            _reviewers,
+            _autoApprove
+        );
+        emit FundCreated(fundCount, msg.sender, _name);
+        return fundCount;
+    }
+
     function submitApplication(
         uint256 _requestedAmount,
         string memory _mongoDbHash,
@@ -102,6 +129,51 @@ contract ScholarshipFund {
         emit ApplicationStatusUpdated(_id, _status);
     }
 
+    function disburseFunds(uint256 _applicationId) external {
+        require(
+            _applicationId <= applicationCount,
+            "Application does not exist"
+        );
+
+        Application storage app = applications[_applicationId];
+        Fund storage fund = funds[app.fundId];
+
+        // Check caller authorization for manual disbursement
+        require(
+            msg.sender == owner || msg.sender == fund.fundOwner,
+            "Caller is not authorized to disburse funds"
+        );
+
+        _disburseFunds(_applicationId);
+    }
+
+    function _disburseFunds(uint256 _applicationId) internal {
+        Application storage app = applications[_applicationId];
+        Fund storage fund = funds[app.fundId];
+
+        // Ensure the application is approved
+        require(
+            keccak256(bytes(app.status)) == keccak256(bytes("Approved")),
+            "Application must be approved"
+        );
+
+        // Ensure the fund has sufficient balance
+        require(
+            app.requestedAmount <= fund.balance,
+            "Insufficient funds in the fund"
+        );
+
+        // Update application status and deduct balance
+        app.status = "Funded";
+        fund.balance -= app.requestedAmount;
+
+        // Transfer the requested amount to the applicant
+        (bool success, ) = app.applicant.call{value: app.requestedAmount}("");
+        require(success, "Disbursement failed");
+
+        emit FundsDisbursed(_applicationId, app.requestedAmount);
+    }
+
     function reviewApplication(uint256 _applicationId, bool approve) external {
         require(
             _applicationId <= applicationCount,
@@ -136,6 +208,11 @@ contract ScholarshipFund {
         if (app.approvals >= fund.minApprovals) {
             app.status = "Approved";
             emit ApplicationStatusUpdated(_applicationId, "Approved");
+
+            // Automatically disburse funds if autoApprove is enabled
+            if (fund.autoApprove) {
+                _disburseFunds(_applicationId);
+            }
         }
     }
 
@@ -145,26 +222,6 @@ contract ScholarshipFund {
         require(_id <= applicationCount, "Application does not exist");
         Application memory app = applications[_id];
         return app;
-    }
-
-    // Fund Functions
-    function createFund(
-        string memory _name,
-        uint256 _minApprovals,
-        address[] memory _reviewers
-    ) external payable returns (uint256) {
-        fundCount++;
-        funds[fundCount] = Fund(
-            fundCount,
-            msg.sender,
-            msg.value,
-            _minApprovals,
-            _name,
-            false,
-            _reviewers
-        );
-        emit FundCreated(fundCount, msg.sender, _name);
-        return fundCount;
     }
 
     function approveFund(uint256 _fundId) external onlyOwner {
@@ -188,33 +245,6 @@ contract ScholarshipFund {
         require(_fundId <= fundCount, "Fund does not exist");
         Fund memory fund = funds[_fundId];
         return fund;
-    }
-
-    function disburseFunds(uint256 _applicationId) external onlyOwner {
-        require(
-            _applicationId <= applicationCount,
-            "Application does not exist"
-        );
-        Application storage app = applications[_applicationId];
-
-        require(app.fundId <= fundCount, "Invalid fund ID"); // Check that the fund exists
-
-        require(
-            keccak256(bytes(app.status)) == keccak256(bytes("Approved")),
-            "Application must be approved"
-        );
-        require(
-            app.requestedAmount <= funds[app.fundId].balance,
-            "Insufficient funds in the fund"
-        );
-
-        app.status = "Funded";
-        funds[app.fundId].balance -= app.requestedAmount; // Deduct the amount from the specific fund
-
-        (bool success, ) = app.applicant.call{value: app.requestedAmount}("");
-        require(success, "Disbursement failed");
-
-        emit FundsDisbursed(_applicationId, app.requestedAmount);
     }
 
     // Helper Functions

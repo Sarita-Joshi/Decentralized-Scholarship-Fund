@@ -5,6 +5,7 @@ import StatusModal from "../components/StatusModal/StatusModal";
 import { getUserAccount, submitApplication } from '../contractUtils';
 import { createApplication, getAllFunds, getApplicationByAddress, updateAppId } from '../dbUtils';
 import "./ApplicantPage.css";
+import Header from "../components/Header/Header";
 
 const ApplicantPage = () => {
   const [funds, setFunds] = useState([]);
@@ -44,6 +45,9 @@ const ApplicantPage = () => {
   }, []);
 
   const openApplicationModal = (fund) => {
+    if (applicationStatus==="Funded" || applicationStatus===null) {
+      
+    }
     setSelectedFund(fund);
     setIsModalOpen(true);
   };
@@ -63,6 +67,7 @@ const ApplicantPage = () => {
     if (Object.keys(errors).length === 0) {
 
         formData.fundId = selectedFund.id;
+        formData.requiredApprovals = selectedFund.minApprovals || 1;
         console.log("Application Submitted:", formData);
         formData.applicantAddress = account;
         console.log({formData, account});
@@ -71,6 +76,7 @@ const ApplicantPage = () => {
         const result = await submitApplication(
             formData.requestedAmount.toString(),
             mongoDBHash.toString(),
+            selectedFund.id
         );
 
         if (result.success) {
@@ -104,26 +110,21 @@ const validateSection = () => {
     // return errors;
 };
 
+const profile = {
+  name: "John Doe",
+  email: "john.doe@example.com",
+  address: "123 Blockchain Avenue, Ethereum City",
+};
+
+const cta = {
+  label: "Check Application Status",
+  onClick: handleCheckStatus,
+};
+
   return (
     <div className="browse-funds-page">
       {/* Top Ribbon */}
-      <div className="top-ribbon">
-        <div className="profile-section">
-          <img
-            src="https://via.placeholder.com/100" // Replace with actual profile image
-            alt="Profile"
-            className="profile-avatar"
-          />
-          <div className="profile-details">
-            <h3>John Doe</h3>
-            <p>Email: john.doe@example.com</p>
-            <p>Address: <strong>{account}</strong></p>
-          </div>
-        </div>
-        <button className="status-button" onClick={handleCheckStatus}>
-          Check Application Status
-        </button>
-      </div>
+      <Header profile={profile} stats={[]} cta={cta}/>
 
       {/* Browse Funds Section */}
       <div className="donation-cards">
@@ -138,6 +139,8 @@ const validateSection = () => {
                             totalFunds={fund.totalFunds}
                             totalApplicants={fund.totalApplicants}
                             fundsNeeded={fund.fundsNeeded}
+                            minimumApprovals={fund.minApprovals}
+                            autoDisburse={fund.autoDisburseFunds}
                             buttonLabel="Apply Now"
                             onDonate={() => {openApplicationModal(fund)}}
                         />

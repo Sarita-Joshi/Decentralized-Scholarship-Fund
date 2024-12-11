@@ -107,7 +107,8 @@ body {
 /* Right-side Image in Hero */
 .hero-image {
     max-width: 65%; /* Increase max-width */
-    margin-right: -30px; /* Pull the image slightly outside */
+    margin-right: -10px; /* Pull the image slightly outside */
+    margin-top: 50px;
     position: relative;
 }
 
@@ -122,7 +123,7 @@ body {
 .decorative-shape {
     position: absolute;
     border-radius: 50%;
-    background-color: #ddd9f5;
+    background-color: #d9e2f5;
     z-index: -1;
     
 }
@@ -185,8 +186,8 @@ body {
 }
 
 .role-section {
-    padding: 3rem 2rem;
     text-align: center;
+    padding-top: 10px;
     padding-left: 120px;
     padding-right: 120px; /* Increased padding to add more space on the sides */
     background-color: #fdfdfd;
